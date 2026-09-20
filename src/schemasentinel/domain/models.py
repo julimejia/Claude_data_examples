@@ -32,6 +32,20 @@ class ChangeType(StrEnum):
     RENAME_CANDIDATE = "rename_candidate"
 
 
+class Decision(StrEnum):
+    RENAME = "rename"
+    DROP_AND_ADD = "drop_and_add"
+    UNKNOWN = "unknown"
+
+
+class Resolution(_Frozen):
+    """LLM verdict on an ambiguous change (FR-4.1)."""
+
+    decision: Decision
+    confidence: float = Field(ge=0.0, le=1.0)
+    rationale: str
+
+
 class Column(_Frozen):
     """A column or nested field; struct fields and list elements live in ``children``."""
 
@@ -72,6 +86,8 @@ class SchemaChange(_Frozen):
     rule_id: str
     reason: str
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    resolution: Resolution | None = None
+    needs_human_review: bool = False
 
 
 class DriftReport(_Frozen):
