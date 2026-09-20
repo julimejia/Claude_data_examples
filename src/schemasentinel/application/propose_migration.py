@@ -24,6 +24,7 @@ class ProposedMigration(BaseModel):
     plan: MigrationPlan
     valid: bool
     validation: str  # "executed" (DuckDB, in memory) or "structural" (no execution)
+    parsed: bool = False  # True when sqlglot (optional extra `sql`) also parsed every statement
     errors: tuple[str, ...] = ()
 
 
@@ -46,6 +47,22 @@ def _balanced(sql: str) -> bool:
             if depth < 0:
                 return False
     return depth == 0 and not quote_char
+
+
+def _validate_parsed(plan: MigrationPlan) -> list[str] | None:
+    """Parse with sqlglot (optional extra `sql`); None when it is not installed."""
+    try:
+        import sqlglot
+        from sqlglot.errors import SqlglotError
+    except ImportError:
+        return None
+    errors = []
+    for st in plan.statements:
+        try:
+            sqlglot.parse_one(st.sql, read=plan.dialect.value)
+        except SqlglotError as exc:
+            errors.append(f"unparseable {plan.dialect.value} statement: {st.sql} ({exc})")
+    return errors
 
 
 def _validate_structure(plan: MigrationPlan) -> list[str]:
@@ -104,6 +121,13 @@ class ProposeMigration:
                 errors=tuple(errs),
             )
         errs = _validate_structure(plan)
+        parsed = _validate_parsed(plan)
+        if parsed is not None:
+            errs += parsed
         return ProposedMigration(
-            plan=plan, valid=not errs, validation="structural", errors=tuple(errs)
+            plan=plan,
+            valid=not errs,
+            validation="structural",
+            parsed=parsed is not None,
+            errors=tuple(errs),
         )
