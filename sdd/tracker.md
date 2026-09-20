@@ -68,7 +68,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 ## M6 — Close the gaps found by the product-owner review (no new requirements)
 
-- [ ] T-024 | P2 | deps: T-012,T-013,T-014,T-017 | Wire Resolve, Explain, ProposeMigration and the notifier into the CLI/report
+- [x] T-024 | P2 | deps: T-012,T-013,T-014,T-017 | Wire Resolve, Explain, ProposeMigration and the notifier into the CLI/report
   AC: FR-4, FR-5, FR-6.2, FR-7.3 (AC-22, AC-25, AC-27, AC-32, AC-37, AC-38, AC-43); `diff` runs the agent stages when `--llm replay|claude-cli` is given (default `none` = deterministic only); `--dialect duckdb|spark|tsql` selects the DDL; report has explanations and DDL; `--notify telegram|console` sends the summary; LLM failure never fails the run.
 - [ ] T-025 | P2 | deps: T-024 | LLM tools: get_snapshot, get_diff, sample_column_values (max 20 values), validate_ddl
   AC: FR-4.4 (AC-28); read-only, bounded, exposed through the LLM port; unit tests for each tool including the 20-value cap.
