@@ -66,6 +66,18 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [x] T-020 | P3 | deps: T-014,T-017 | README with architecture diagram, usage and demo report
   AC: README explains problem, architecture (mermaid), quick start, eval results table.
 
+## M5 — Public demo (Vercel)
+
+- [ ] T-021 | P2 | deps: T-007,T-009 | Demo API: Vercel Python function POST /api/diff using only the domain layer
+  AC: FR-9.1, FR-9.2, NFR-7; api/diff.py (BaseHTTPRequestHandler style used by Vercel's Python runtime) adds src/ to the path and imports only schemasentinel.domain/application; handler tests use golden-set pairs and match the CLI classification; 400 on invalid or oversized input; no logging of input.
+  Notes: the function must NOT import duckdb, deltalake, the LLM adapters or the notifiers. If the domain layer pulls in a heavy dependency, raise a decision request instead of working around it.
+- [ ] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
+  AC: FR-9.3, FR-9.4; plain HTML/CSS/JS under public/ (no build step), examples generated from the golden set into a JSON file by a script, responsive at 400 px, keyboard accessible, light/dark; a test proves every example the UI references exists and its stored result matches the deterministic classification.
+  Notes: label stored AI output honestly ("recorded" only if truly recorded from Claude, else "sample"). No external scripts or fonts.
+- [ ] T-023 | P2 | deps: T-021,T-022 | Vercel deployment config, size check and docs
+  AC: FR-9.5; vercel.json (routes, includeFiles for src/, static output directory), root requirements.txt containing only pydantic, scripts/check_demo_size.py that fails above 50 MB, docs/deploy-vercel.md (import the repo, Framework Other, production branch, how to verify), README links the live demo placeholder.
+  Notes: Vercel's runtime cannot be exercised locally; document exactly what to verify after the first deploy.
+
 ## M6 — Close the gaps found by the product-owner review (no new requirements)
 
 - [x] T-024 | P2 | deps: T-012,T-013,T-014,T-017 | Wire Resolve, Explain, ProposeMigration and the notifier into the CLI/report
@@ -80,18 +92,6 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [ ] T-028 | P3 | deps: T-024 | Honest README: measured eval results and real outputs; recording script
   AC: FR-8, FR-7.2 (AC-29, AC-49, AC-57); README eval table shows measured values from `python -m schemasentinel.evals`; the demo report is produced by the CLI, not invented; scripts/record_replays.py documented.
   Notes: real Replay recordings need `claude -p` in record mode, which roles cannot run. Do NOT fabricate recordings; label anything produced by FakeLLM as "sample". Ask the human to run the recording script.
-
-## M5 — Public demo (Vercel)
-
-- [ ] T-021 | P2 | deps: T-007,T-009 | Demo API: Vercel Python function POST /api/diff using only the domain layer
-  AC: FR-9.1, FR-9.2, NFR-7; api/diff.py (BaseHTTPRequestHandler style used by Vercel's Python runtime) adds src/ to the path and imports only schemasentinel.domain/application; handler tests use golden-set pairs and match the CLI classification; 400 on invalid or oversized input; no logging of input.
-  Notes: the function must NOT import duckdb, deltalake, the LLM adapters or the notifiers. If the domain layer pulls in a heavy dependency, raise a decision request instead of working around it.
-- [ ] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
-  AC: FR-9.3, FR-9.4; plain HTML/CSS/JS under public/ (no build step), examples generated from the golden set into a JSON file by a script, responsive at 400 px, keyboard accessible, light/dark; a test proves every example the UI references exists and its stored result matches the deterministic classification.
-  Notes: label stored AI output honestly ("recorded" only if truly recorded from Claude, else "sample"). No external scripts or fonts.
-- [ ] T-023 | P2 | deps: T-021,T-022 | Vercel deployment config, size check and docs
-  AC: FR-9.5; vercel.json (routes, includeFiles for src/, static output directory), root requirements.txt containing only pydantic, scripts/check_demo_size.py that fails above 50 MB, docs/deploy-vercel.md (import the repo, Framework Other, production branch, how to verify), README links the live demo placeholder.
-  Notes: Vercel's runtime cannot be exercised locally; document exactly what to verify after the first deploy.
 
 ## Decision log
 (The loop appends resolved decisions here. Full text lives in `docs/adr/`.)
