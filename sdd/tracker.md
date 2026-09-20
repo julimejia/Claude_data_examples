@@ -22,7 +22,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: maps DuckDB/Parquet/Delta type names to logical types; table-driven tests for widen/narrow/category-change.
 - [x] T-004 | P1 | deps: T-002,T-003 | Deterministic diff engine with rename candidates
   AC: FR-2.1–2.3; diff(x, x) is empty; add/remove symmetry test; order-independent. Rename similarity uses stdlib `difflib` (OQ-1).
-- [ ] T-005 | P1 | deps: T-004 | Rule-based classifier (table in FR-3.1)
+- [x] T-005 | P1 | deps: T-004 | Rule-based classifier (table in FR-3.1)
   AC: FR-3.1–3.3; table-driven test covering every rule row; each change has rule_id, reason, confidence.
 - [ ] T-006 | P1 | deps: T-002 | Local files SchemaSource: CSV and Parquet via DuckDB
   AC: FR-1.1, FR-1.2; fixtures under tests/fixtures; metadata-only read for Parquet (no full scan).
@@ -76,3 +76,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - 2026-09-19 19:14 T-002 done: Added frozen Pydantic domain models in domain/models.py (Column with recursive children, SchemaSnapshot with flatten() to dotted paths, SchemaChange, Severity, Verdict, ChangeType, DriftReport) plus tests/unit/test_models.py covering JSON round-trip, frozenness and nested dotted paths; 7 tests pass and ruff is clean.
 - 2026-09-19 19:16 T-003 done: Added domain/types.py: parse_type maps DuckDB/Parquet/Delta/internal type names to LogicalType, and compare_types classifies baseline->current as same/widened/narrowed/category_change (ints, floats, decimals, string length, date/timestamp). Table-driven tests in tests/unit/test_types.py pass and ruff is clean.
 - 2026-09-19 19:18 T-004 done: Added domain/diff.py: deterministic, order-independent diff (add/remove/type/nullability/position/nested via dotted paths) with difflib-based RENAME_CANDIDATE detection (threshold 0.6, one-to-one, same parent, compatible types); changes are emitted as needs_review with DIFF-* placeholder rule ids for rules.py (T-005) to classify. 20 new tests cover identity, symmetry and order-independence; all tests and ruff pass.
+- 2026-09-19 19:19 T-005 done: Added domain/rules.py (classify, classify_all) implementing every FR-3.1 row with rule_id, reason and confidence, format-aware reorder severity (csv positional), plus table-driven tests in tests/unit/test_rules.py; 126 tests pass, ruff clean.
