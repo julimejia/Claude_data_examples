@@ -56,7 +56,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: FR-1.3; fixtures created with deltalake in tmp_path; reads log only.
 - [x] T-017 | P2 | deps: T-007 | Notifier port with ConsoleNotifier and TelegramNotifier
   AC: FR-7.3; chat-id allowlist enforced; HTTP layer faked in tests; token never logged. Use stdlib `urllib`, no new dependency.
-- [ ] T-018 | P3 | deps: T-008,T-015 | GitHub Actions workflow: ruff, pytest, evals in Replay mode
+- [x] T-018 | P3 | deps: T-008,T-015 | GitHub Actions workflow: ruff, pytest, evals in Replay mode
   AC: FR-7.4; workflow file valid YAML in .github/workflows/ci.yml, triggers on push to dev.
 - [ ] T-019 | P3 | deps: T-016 | OneLake SchemaSource adapter (optional extra)
   AC: FR-7.1; unit-tested with a fake storage layer; documented setup; real Fabric recordings deferred (needs the user's tenant, before 2026-11-18).
