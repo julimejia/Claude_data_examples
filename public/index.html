@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>SchemaSentinel demo</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#results">Skip to results</a>
+<header>
+  <h1>SchemaSentinel</h1>
+  <p>Detect schema drift between two dataset versions and classify each change.</p>
+</header>
+<main>
+  <section aria-labelledby="inputs-h">
+    <h2 id="inputs-h">Schemas</h2>
+    <div class="row">
+      <label for="example">Bundled example</label>
+      <select id="example"><option value="">Loading examples…</option></select>
+    </div>
+    <div class="editors">
+      <div>
+        <label for="baseline">Baseline snapshot (JSON)</label>
+        <textarea id="baseline" spellcheck="false" rows="12"></textarea>
+      </div>
+      <div>
+        <label for="current">Current snapshot (JSON)</label>
+        <textarea id="current" spellcheck="false" rows="12"></textarea>
+      </div>
+    </div>
+    <button id="run" type="button">Compare</button>
+  </section>
+  <section id="results" tabindex="-1" aria-labelledby="results-h" aria-live="polite">
+    <h2 id="results-h">Results</h2>
+    <p id="status" class="muted">Pick an example or paste two snapshots, then press Compare.</p>
+    <div id="verdict"></div>
+    <ul id="changes" class="changes"></ul>
+    <div id="ai"></div>
+  </section>
+</main>
+<footer>
+  <p class="muted">Pasted schemas are only diffed and classified by deterministic rules; nothing is
+  stored. AI stages (explanations, migrations) are disabled in the public demo.</p>
+</footer>
+<script src="app.js"></script>
+</body>
+</html>
