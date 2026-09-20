@@ -45,7 +45,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [x] T-013 | P2 | deps: T-005,T-010 | ProposeMigration: DDL for DuckDB, Spark SQL/Delta, T-SQL with validation
   AC: FR-5.1–5.4; DuckDB DDL validated by execution on an in-memory baseline table; ordering safe-before-destructive.
   Notes: validating T-SQL/Spark by parsing likely needs `sqlglot` → this is a RISKY LIBRARY decision (OQ-2); raise a decision request instead of adding it silently.
-- [ ] T-014 | P3 | deps: T-012,T-013 | Explain use case: per-change impact and executive summary
+- [x] T-014 | P3 | deps: T-012,T-013 | Explain use case: per-change impact and executive summary
   AC: FR-4.2; output validated by Pydantic; degrades gracefully.
 - [ ] T-015 | P2 | deps: T-009,T-012,T-013 | Extend evals with resolution accuracy, DDL validity rate, invalid-output rate
   AC: FR-8.2; thresholds in evals/thresholds.json; Replay-mode reproducible.
