@@ -15,6 +15,7 @@ from schemasentinel.application.explain import Explain
 from schemasentinel.application.propose_migration import ProposeMigration
 from schemasentinel.application.report import render_json, render_markdown
 from schemasentinel.application.resolve import Resolve
+from schemasentinel.application.run_log import CountingLLM, RunLog
 from schemasentinel.domain.migration import Dialect
 from schemasentinel.domain.models import DriftReport, Explanation, SchemaSnapshot, Verdict
 from schemasentinel.ports.llm import LLMPort
@@ -153,13 +154,21 @@ def main(
     except SystemExit as exc:  # argparse exits; return the code so callers get an int
         return exc.code if isinstance(exc.code, int) else EXIT_ERROR
     source = source or CliSource()
+    runlog = RunLog(sys.stderr)
+    counting: CountingLLM | None = None
+    report: DriftReport | None = None
+    outcome = "error"
+    refs = [args.source] if args.command == "snapshot" else [args.baseline, args.current]
     try:
         if args.command == "snapshot":
             snapshot = source.snapshot(args.source)
             _emit(snapshot.model_dump_json(indent=2), args.output)
+            outcome = "ok"
             return EXIT_OK
         report = DetectDrift(source).run(args.baseline, args.current)
-        report, explanation = _agent_stages(report, llm or _make_llm(args.llm, args.replay_dir))
+        inner = llm or _make_llm(args.llm, args.replay_dir)
+        counting = CountingLLM(inner) if inner is not None else None
+        report, explanation = _agent_stages(report, counting)
         migration = None
         if args.dialect is not None or args.llm != "none" or llm is not None:
             dialect = Dialect(args.dialect or "duckdb")
@@ -171,9 +180,14 @@ def main(
         _emit(text, args.output)
         if args.notify or notifier is not None:
             _notify(report, args.output, notifier, args.notify)
+        outcome = report.verdict.value
     except Exception as exc:  # noqa: BLE001 - CLI boundary: any failure is exit code 2
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
+    finally:
+        runlog.emit(
+            command=args.command, sources=refs, outcome=outcome, report=report, llm=counting
+        )
     return EXIT_BREAKING if report.verdict is Verdict.BREAKING else EXIT_OK
 
 
