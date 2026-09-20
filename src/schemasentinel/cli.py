@@ -5,11 +5,25 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+from schemasentinel.adapters.llm.claude_cli import ClaudeCliAdapter
+from schemasentinel.adapters.llm.replay import ReplayAdapter
+from schemasentinel.adapters.notify.console import ConsoleNotifier
+from schemasentinel.adapters.notify.telegram import TelegramNotifier
 from schemasentinel.adapters.sources.local_files import LocalFilesSource
 from schemasentinel.application.detect_drift import DetectDrift
+from schemasentinel.application.explain import Explain
+from schemasentinel.application.propose_migration import ProposeMigration
 from schemasentinel.application.report import render_json, render_markdown
-from schemasentinel.domain.models import SchemaSnapshot, Verdict
+from schemasentinel.application.resolve import Resolve
+from schemasentinel.domain.migration import Dialect
+from schemasentinel.domain.models import DriftReport, Explanation, SchemaSnapshot, Verdict
+from schemasentinel.ports.llm import LLMPort
+from schemasentinel.ports.notifier import Notifier, notification_from_report
 from schemasentinel.ports.schema_source import SchemaSource
+
+LLM_CHOICES = ("none", "replay", "claude-cli")
+NOTIFY_CHOICES = ("telegram", "console")
+DEFAULT_REPLAY_DIR = Path("evals") / "replay"
 
 EXIT_OK = 0
 EXIT_BREAKING = 1
@@ -53,12 +67,60 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument(
         "--dialect",
         choices=DIALECTS,
-        default="duckdb",
-        help="DDL dialect (reserved: migration proposals are not generated yet)",
+        default=None,
+        help="DDL dialect; adds a proposed migration to the report (default with --llm: duckdb)",
     )
+    d.add_argument("--table", default="dataset", help="table name used in the DDL")
+    d.add_argument(
+        "--llm",
+        choices=LLM_CHOICES,
+        default="none",
+        help="run the agent stages (resolve, explain) with this LLM; none = deterministic only",
+    )
+    d.add_argument(
+        "--replay-dir",
+        default=str(DEFAULT_REPLAY_DIR),
+        help="recordings directory for --llm replay",
+    )
+    d.add_argument("--notify", choices=NOTIFY_CHOICES, help="send the summary to a notifier")
     d.add_argument("--format", choices=("json", "md"), default="json", dest="fmt")
     d.add_argument("-o", "--output", help="output file (default: stdout)")
     return parser
+
+
+def _make_llm(name: str, replay_dir: str) -> LLMPort | None:
+    if name == "replay":
+        return ReplayAdapter(Path(replay_dir))
+    if name == "claude-cli":
+        return ClaudeCliAdapter()
+    return None
+
+
+def _make_notifier(name: str) -> Notifier:
+    if name == "telegram":
+        return TelegramNotifier.from_env()
+    return ConsoleNotifier(sys.stderr)
+
+
+def _warn(message: str) -> None:
+    print(f"warning: {message}", file=sys.stderr)
+
+
+def _agent_stages(
+    report: DriftReport, llm: LLMPort | None
+) -> tuple[DriftReport, Explanation | None]:
+    """Resolve + Explain; an LLM failure degrades the result but never fails the run."""
+    if llm is None:
+        return report, None
+    try:
+        report = Resolve(llm).run(report)
+    except Exception as exc:  # noqa: BLE001 - LLM problems must not fail the run
+        _warn(f"resolve stage skipped: {type(exc).__name__}")
+    try:
+        return report, Explain(llm).run(report)
+    except Exception as exc:  # noqa: BLE001
+        _warn(f"explain stage skipped: {type(exc).__name__}")
+        return report, None
 
 
 def _emit(text: str, output: str | None) -> None:
@@ -68,7 +130,24 @@ def _emit(text: str, output: str | None) -> None:
         sys.stdout.write(text if text.endswith("\n") else text + "\n")
 
 
-def main(argv: Sequence[str] | None = None, source: SchemaSource | None = None) -> int:
+def _notify(
+    report: DriftReport, location: str | None, notifier: Notifier | None, name: str | None
+) -> None:
+    """Delivery failures are reported as a warning; they never change the exit code."""
+    try:
+        notifier = notifier or _make_notifier(name or "console")
+        notifier.send(notification_from_report(report, location))
+    except Exception as exc:  # noqa: BLE001
+        _warn(f"notification not sent: {type(exc).__name__}")
+
+
+def main(
+    argv: Sequence[str] | None = None,
+    source: SchemaSource | None = None,
+    llm: LLMPort | None = None,
+    notifier: Notifier | None = None,
+) -> int:
+    """`llm` and `notifier` override the ones built from --llm / --notify (used by tests)."""
     args = build_parser().parse_args(argv)
     source = source or CliSource()
     try:
@@ -77,8 +156,17 @@ def main(argv: Sequence[str] | None = None, source: SchemaSource | None = None) 
             _emit(snapshot.model_dump_json(indent=2), args.output)
             return EXIT_OK
         report = DetectDrift(source).run(args.baseline, args.current)
-        text = render_json(report) if args.fmt == "json" else render_markdown(report)
+        report, explanation = _agent_stages(report, llm or _make_llm(args.llm, args.replay_dir))
+        migration = None
+        if args.dialect is not None or args.llm != "none" or llm is not None:
+            migration = ProposeMigration().run(report, Dialect(args.dialect or "duckdb"), args.table)
+        if args.fmt == "json":
+            text = render_json(report, explanation, migration)
+        else:
+            text = render_markdown(report, explanation, migration)
         _emit(text, args.output)
+        if args.notify or notifier is not None:
+            _notify(report, args.output, notifier, args.notify)
     except Exception as exc:  # noqa: BLE001 - CLI boundary: any failure is exit code 2
         print(f"error: {exc}", file=sys.stderr)
         return EXIT_ERROR
