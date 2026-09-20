@@ -47,7 +47,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   Notes: validating T-SQL/Spark by parsing likely needs `sqlglot` → this is a RISKY LIBRARY decision (OQ-2); raise a decision request instead of adding it silently.
 - [x] T-014 | P3 | deps: T-012,T-013 | Explain use case: per-change impact and executive summary
   AC: FR-4.2; output validated by Pydantic; degrades gracefully.
-- [ ] T-015 | P2 | deps: T-009,T-012,T-013 | Extend evals with resolution accuracy, DDL validity rate, invalid-output rate
+- [x] T-015 | P2 | deps: T-009,T-012,T-013 | Extend evals with resolution accuracy, DDL validity rate, invalid-output rate
   AC: FR-8.2; thresholds in evals/thresholds.json; Replay-mode reproducible.
 
 ## M3 — Integrations
