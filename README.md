@@ -54,7 +54,7 @@ Exit codes: `0` no breaking change, `1` breaking change found, `2` error.
 
 ## Eval results
 
-The eval harness replays the golden cases (`tests/golden/cases`, 45 cases covering every row
+The eval harness replays the golden cases (`tests/golden/cases`, 44 cases covering every row
 of the classification table, renames, nesting and DDL) and gates CI on `evals/thresholds.json`:
 
 ```
@@ -70,6 +70,26 @@ python -m schemasentinel.evals
 | invalid_output_rate          | <= 0.00    |
 
 The run prints `RESULT: PASS` only when every metric meets its gate.
+
+## Demo report
+
+Output of `schemasentinel diff baseline.json data/orders_v2.parquet --format md` (illustrative;
+exit code `1` because a breaking change was found):
+
+```
+# Schema drift report: orders
+
+Verdict: BREAKING (2 breaking, 1 non-breaking)
+
+| Change                  | Kind          | Severity     |
+|-------------------------|---------------|--------------|
+| customer_id dropped     | column_removed| breaking     |
+| amount int64 -> int32   | type_narrowed | breaking     |
+| coupon_code added (null)| column_added  | non-breaking |
+
+Proposed migration:
+ALTER TABLE orders DROP COLUMN customer_id;
+```
 
 ## OneLake (Microsoft Fabric) source
 
