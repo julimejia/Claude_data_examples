@@ -74,7 +74,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [x] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
   AC: FR-9.3, FR-9.4; plain HTML/CSS/JS under public/ (no build step), examples generated from the golden set into a JSON file by a script, responsive at 400 px, keyboard accessible, light/dark; a test proves every example the UI references exists and its stored result matches the deterministic classification.
   Notes: label stored AI output honestly ("recorded" only if truly recorded from Claude, else "sample"). No external scripts or fonts.
-- [ ] T-023 | P2 | deps: T-021,T-022 | Vercel deployment config, size check and docs
+- [x] T-023 | P2 | deps: T-021,T-022 | Vercel deployment config, size check and docs
   AC: FR-9.5; vercel.json (routes, includeFiles for src/, static output directory), root requirements.txt containing only pydantic, scripts/check_demo_size.py that fails above 50 MB, docs/deploy-vercel.md (import the repo, Framework Other, production branch, how to verify), README links the live demo placeholder.
   Notes: Vercel's runtime cannot be exercised locally; document exactly what to verify after the first deploy.
 
