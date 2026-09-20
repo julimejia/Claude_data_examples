@@ -231,8 +231,10 @@ class _Builder:
         self._emit(sql, safety, path, PHASE_ALTER)
 
 
-def _is_nested(path: str) -> bool:
-    return "." in path
+def _is_nested(path: str, col: Column | None) -> bool:
+    # a nested field's path is "parent.leaf" while its column name is just the leaf; a
+    # top-level column whose own name contains a dot has name == path
+    return "." in path and (col is None or col.name != path)
 
 
 def _type_differs(old: Column, new: Column) -> bool:
@@ -247,7 +249,7 @@ def _handle(b: _Builder, ch: SchemaChange, skipped: list[SkippedChange]) -> None
     ct = ch.change_type
     if ct is ChangeType.POSITION_CHANGED:
         return  # column order cannot be altered by DDL; not a schema-content change
-    if _is_nested(path):
+    if _is_nested(path, new or old):
         skipped.append(SkippedChange(path=path, reason="nested field changes are not supported"))
         return
     if ct is ChangeType.COLUMN_ADDED and new:
