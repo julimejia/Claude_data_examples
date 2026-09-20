@@ -37,7 +37,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 - [x] T-010 | P1 | deps: T-002 | LLMPort, FakeLLM and ReplayAdapter (+ record mode)
   AC: FR-7.2; Replay is deterministic keyed by hash of (system, prompt, schema); unit tests without network.
-- [ ] T-011 | P2 | deps: T-010 | ClaudeCliAdapter (subprocess `claude -p`, JSON validation, 2 retries)
+- [x] T-011 | P2 | deps: T-010 | ClaudeCliAdapter (subprocess `claude -p`, JSON validation, 2 retries)
   AC: FR-7.2, FR-4.3; tested with a fake subprocess; locates the binary via CLAUDE_BIN env or PATH; never logs secrets.
   Notes: any decision about process handling or timeouts is routine; do not escalate.
 - [ ] T-012 | P2 | deps: T-005,T-010 | Resolve use case: LLM decides rename vs drop_and_add
