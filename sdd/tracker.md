@@ -28,7 +28,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: FR-1.1, FR-1.2; fixtures under tests/fixtures; metadata-only read for Parquet (no full scan).
 - [x] T-007 | P1 | deps: T-005,T-006 | DetectDrift use case + JSON and Markdown report
   AC: FR-6.1, FR-6.2; report has verdict, changes, metadata; snapshot tests for the Markdown output.
-- [ ] T-008 | P2 | deps: T-007 | CLI: `snapshot` and `diff` commands with exit codes
+- [x] T-008 | P2 | deps: T-007 | CLI: `snapshot` and `diff` commands with exit codes
   AC: FR-6.3; integration test via subprocess; exit 0/1/2 semantics verified.
 - [ ] T-009 | P2 | deps: T-007 | Golden set (≥ 30 cases) and eval harness with thresholds
   AC: FR-8.1–8.3; `python -m schemasentinel.evals` prints metrics and fails on regression; breaking-change recall 1.0.
@@ -79,3 +79,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - 2026-09-19 19:19 T-005 done: Added domain/rules.py (classify, classify_all) implementing every FR-3.1 row with rule_id, reason and confidence, format-aware reorder severity (csv positional), plus table-driven tests in tests/unit/test_rules.py; 126 tests pass, ruff clean.
 - 2026-09-19 19:21 T-006 done: Added the SchemaSource port and LocalFilesSource (DuckDB): Parquet file/directory schemas come from the footer only, CSV uses sniff_csv and records delimiter and has_header in metadata. Added CSV/Parquet fixtures under tests/fixtures (plus make_fixtures.py) and tests; 136 tests pass and ruff is clean. Caveat: DuckDB-written fixtures mark every Parquet column OPTIONAL, so the REQUIRED-to-NOT NULL mapping is tested with synthetic rows only. Nested types are not expanded (FR-1.4 left for a later task).
 - 2026-09-19 19:23 T-007 done: Added application/detect_drift.py (DetectDrift use case + pure build_report, verdict, run metadata) and application/report.py (JSON and Markdown renderers) with unit tests and Markdown snapshot tests (breaking, non_breaking, none); 145 tests pass, ruff clean.
+- 2026-09-19 19:24 T-008 done: Added CLI (cli.py, __main__.py, console script) with `snapshot` and `diff` (--format json|md, --dialect accepted but reserved until DDL exists, -o); diff also accepts saved snapshot .json files. Exit codes 0/1/2 verified by subprocess integration tests; 153 tests pass and ruff is clean.
