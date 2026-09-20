@@ -157,131 +157,6 @@
    }
   },
   {
-   "id": "add-not-null-default",
-   "description": "NOT NULL column with default",
-   "baseline": {
-    "source": "add-not-null-default/baseline",
-    "format": "parquet",
-    "columns": [
-     {
-      "name": "id",
-      "data_type": "BIGINT",
-      "nullable": false,
-      "position": 0,
-      "default": null,
-      "children": []
-     }
-    ],
-    "metadata": {}
-   },
-   "current": {
-    "source": "add-not-null-default/current",
-    "format": "parquet",
-    "columns": [
-     {
-      "name": "id",
-      "data_type": "BIGINT",
-      "nullable": false,
-      "position": 0,
-      "default": null,
-      "children": []
-     },
-     {
-      "name": "qty",
-      "data_type": "INTEGER",
-      "nullable": false,
-      "position": 1,
-      "default": "0",
-      "children": []
-     }
-    ],
-    "metadata": {}
-   },
-   "result": {
-    "schema_version": 1,
-    "baseline": {
-     "source": "add-not-null-default/baseline",
-     "format": "parquet",
-     "columns": [
-      {
-       "name": "id",
-       "data_type": "BIGINT",
-       "nullable": false,
-       "position": 0,
-       "default": null,
-       "children": []
-      }
-     ],
-     "metadata": {}
-    },
-    "current": {
-     "source": "add-not-null-default/current",
-     "format": "parquet",
-     "columns": [
-      {
-       "name": "id",
-       "data_type": "BIGINT",
-       "nullable": false,
-       "position": 0,
-       "default": null,
-       "children": []
-      },
-      {
-       "name": "qty",
-       "data_type": "INTEGER",
-       "nullable": false,
-       "position": 1,
-       "default": "0",
-       "children": []
-      }
-     ],
-     "metadata": {}
-    },
-    "verdict": "non_breaking",
-    "changes": [
-     {
-      "change_type": "column_added",
-      "path": "qty",
-      "baseline": null,
-      "current": {
-       "name": "qty",
-       "data_type": "INTEGER",
-       "nullable": false,
-       "position": 1,
-       "default": "0",
-       "children": []
-      },
-      "severity": "non_breaking",
-      "rule_id": "ADD-NOT-NULL-DEFAULT",
-      "reason": "NOT NULL column added with a default value",
-      "confidence": 1.0,
-      "resolution": null,
-      "needs_human_review": false
-     }
-    ],
-    "run_metadata": {
-     "change_counts": {
-      "non_breaking": 1
-     },
-     "llm_calls": 0
-    }
-   },
-   "explanation": {
-    "label": "sample",
-    "summary": "Verdict: non_breaking. 1 change(s) detected, 0 breaking.",
-    "impacts": []
-   },
-   "ddl": {
-    "label": "sample",
-    "dialect": "duckdb",
-    "statements": [
-     "ALTER TABLE \"my_table\" ADD COLUMN \"qty\" INTEGER DEFAULT 0;",
-     "ALTER TABLE \"my_table\" ALTER COLUMN \"qty\" SET NOT NULL;"
-    ],
-    "skipped": []
-   }
-  },
-  {
    "id": "add-not-null",
    "description": "NOT NULL column without default",
    "baseline": {
@@ -406,6 +281,131 @@
     "dialect": "duckdb",
     "statements": [
      "ALTER TABLE \"my_table\" ADD COLUMN \"qty\" INTEGER;",
+     "ALTER TABLE \"my_table\" ALTER COLUMN \"qty\" SET NOT NULL;"
+    ],
+    "skipped": []
+   }
+  },
+  {
+   "id": "add-not-null-default",
+   "description": "NOT NULL column with default",
+   "baseline": {
+    "source": "add-not-null-default/baseline",
+    "format": "parquet",
+    "columns": [
+     {
+      "name": "id",
+      "data_type": "BIGINT",
+      "nullable": false,
+      "position": 0,
+      "default": null,
+      "children": []
+     }
+    ],
+    "metadata": {}
+   },
+   "current": {
+    "source": "add-not-null-default/current",
+    "format": "parquet",
+    "columns": [
+     {
+      "name": "id",
+      "data_type": "BIGINT",
+      "nullable": false,
+      "position": 0,
+      "default": null,
+      "children": []
+     },
+     {
+      "name": "qty",
+      "data_type": "INTEGER",
+      "nullable": false,
+      "position": 1,
+      "default": "0",
+      "children": []
+     }
+    ],
+    "metadata": {}
+   },
+   "result": {
+    "schema_version": 1,
+    "baseline": {
+     "source": "add-not-null-default/baseline",
+     "format": "parquet",
+     "columns": [
+      {
+       "name": "id",
+       "data_type": "BIGINT",
+       "nullable": false,
+       "position": 0,
+       "default": null,
+       "children": []
+      }
+     ],
+     "metadata": {}
+    },
+    "current": {
+     "source": "add-not-null-default/current",
+     "format": "parquet",
+     "columns": [
+      {
+       "name": "id",
+       "data_type": "BIGINT",
+       "nullable": false,
+       "position": 0,
+       "default": null,
+       "children": []
+      },
+      {
+       "name": "qty",
+       "data_type": "INTEGER",
+       "nullable": false,
+       "position": 1,
+       "default": "0",
+       "children": []
+      }
+     ],
+     "metadata": {}
+    },
+    "verdict": "non_breaking",
+    "changes": [
+     {
+      "change_type": "column_added",
+      "path": "qty",
+      "baseline": null,
+      "current": {
+       "name": "qty",
+       "data_type": "INTEGER",
+       "nullable": false,
+       "position": 1,
+       "default": "0",
+       "children": []
+      },
+      "severity": "non_breaking",
+      "rule_id": "ADD-NOT-NULL-DEFAULT",
+      "reason": "NOT NULL column added with a default value",
+      "confidence": 1.0,
+      "resolution": null,
+      "needs_human_review": false
+     }
+    ],
+    "run_metadata": {
+     "change_counts": {
+      "non_breaking": 1
+     },
+     "llm_calls": 0
+    }
+   },
+   "explanation": {
+    "label": "sample",
+    "summary": "Verdict: non_breaking. 1 change(s) detected, 0 breaking.",
+    "impacts": []
+   },
+   "ddl": {
+    "label": "sample",
+    "dialect": "duckdb",
+    "statements": [
+     "ALTER TABLE \"my_table\" ADD COLUMN \"qty\" INTEGER DEFAULT 0;",
      "ALTER TABLE \"my_table\" ALTER COLUMN \"qty\" SET NOT NULL;"
     ],
     "skipped": []
@@ -6266,153 +6266,6 @@
    }
   },
   {
-   "id": "widen-int-to-double",
-   "description": "int32 fits exactly in a double",
-   "baseline": {
-    "source": "widen-int-to-double/baseline",
-    "format": "parquet",
-    "columns": [
-     {
-      "name": "id",
-      "data_type": "BIGINT",
-      "nullable": false,
-      "position": 0,
-      "default": null,
-      "children": []
-     },
-     {
-      "name": "n",
-      "data_type": "INTEGER",
-      "nullable": true,
-      "position": 1,
-      "default": null,
-      "children": []
-     }
-    ],
-    "metadata": {}
-   },
-   "current": {
-    "source": "widen-int-to-double/current",
-    "format": "parquet",
-    "columns": [
-     {
-      "name": "id",
-      "data_type": "BIGINT",
-      "nullable": false,
-      "position": 0,
-      "default": null,
-      "children": []
-     },
-     {
-      "name": "n",
-      "data_type": "DOUBLE",
-      "nullable": true,
-      "position": 1,
-      "default": null,
-      "children": []
-     }
-    ],
-    "metadata": {}
-   },
-   "result": {
-    "schema_version": 1,
-    "baseline": {
-     "source": "widen-int-to-double/baseline",
-     "format": "parquet",
-     "columns": [
-      {
-       "name": "id",
-       "data_type": "BIGINT",
-       "nullable": false,
-       "position": 0,
-       "default": null,
-       "children": []
-      },
-      {
-       "name": "n",
-       "data_type": "INTEGER",
-       "nullable": true,
-       "position": 1,
-       "default": null,
-       "children": []
-      }
-     ],
-     "metadata": {}
-    },
-    "current": {
-     "source": "widen-int-to-double/current",
-     "format": "parquet",
-     "columns": [
-      {
-       "name": "id",
-       "data_type": "BIGINT",
-       "nullable": false,
-       "position": 0,
-       "default": null,
-       "children": []
-      },
-      {
-       "name": "n",
-       "data_type": "DOUBLE",
-       "nullable": true,
-       "position": 1,
-       "default": null,
-       "children": []
-      }
-     ],
-     "metadata": {}
-    },
-    "verdict": "non_breaking",
-    "changes": [
-     {
-      "change_type": "type_changed",
-      "path": "n",
-      "baseline": {
-       "name": "n",
-       "data_type": "INTEGER",
-       "nullable": true,
-       "position": 1,
-       "default": null,
-       "children": []
-      },
-      "current": {
-       "name": "n",
-       "data_type": "DOUBLE",
-       "nullable": true,
-       "position": 1,
-       "default": null,
-       "children": []
-      },
-      "severity": "non_breaking",
-      "rule_id": "TYPE-WIDENED",
-      "reason": "Type widened: INTEGER -> DOUBLE",
-      "confidence": 1.0,
-      "resolution": null,
-      "needs_human_review": false
-     }
-    ],
-    "run_metadata": {
-     "change_counts": {
-      "non_breaking": 1
-     },
-     "llm_calls": 0
-    }
-   },
-   "explanation": {
-    "label": "sample",
-    "summary": "Verdict: non_breaking. 1 change(s) detected, 0 breaking.",
-    "impacts": []
-   },
-   "ddl": {
-    "label": "sample",
-    "dialect": "duckdb",
-    "statements": [
-     "ALTER TABLE \"my_table\" ALTER COLUMN \"n\" SET DATA TYPE DOUBLE;"
-    ],
-    "skipped": []
-   }
-  },
-  {
    "id": "widen-int",
    "description": "int32 to int64",
    "baseline": {
@@ -6555,6 +6408,153 @@
     "dialect": "duckdb",
     "statements": [
      "ALTER TABLE \"my_table\" ALTER COLUMN \"n\" SET DATA TYPE BIGINT;"
+    ],
+    "skipped": []
+   }
+  },
+  {
+   "id": "widen-int-to-double",
+   "description": "int32 fits exactly in a double",
+   "baseline": {
+    "source": "widen-int-to-double/baseline",
+    "format": "parquet",
+    "columns": [
+     {
+      "name": "id",
+      "data_type": "BIGINT",
+      "nullable": false,
+      "position": 0,
+      "default": null,
+      "children": []
+     },
+     {
+      "name": "n",
+      "data_type": "INTEGER",
+      "nullable": true,
+      "position": 1,
+      "default": null,
+      "children": []
+     }
+    ],
+    "metadata": {}
+   },
+   "current": {
+    "source": "widen-int-to-double/current",
+    "format": "parquet",
+    "columns": [
+     {
+      "name": "id",
+      "data_type": "BIGINT",
+      "nullable": false,
+      "position": 0,
+      "default": null,
+      "children": []
+     },
+     {
+      "name": "n",
+      "data_type": "DOUBLE",
+      "nullable": true,
+      "position": 1,
+      "default": null,
+      "children": []
+     }
+    ],
+    "metadata": {}
+   },
+   "result": {
+    "schema_version": 1,
+    "baseline": {
+     "source": "widen-int-to-double/baseline",
+     "format": "parquet",
+     "columns": [
+      {
+       "name": "id",
+       "data_type": "BIGINT",
+       "nullable": false,
+       "position": 0,
+       "default": null,
+       "children": []
+      },
+      {
+       "name": "n",
+       "data_type": "INTEGER",
+       "nullable": true,
+       "position": 1,
+       "default": null,
+       "children": []
+      }
+     ],
+     "metadata": {}
+    },
+    "current": {
+     "source": "widen-int-to-double/current",
+     "format": "parquet",
+     "columns": [
+      {
+       "name": "id",
+       "data_type": "BIGINT",
+       "nullable": false,
+       "position": 0,
+       "default": null,
+       "children": []
+      },
+      {
+       "name": "n",
+       "data_type": "DOUBLE",
+       "nullable": true,
+       "position": 1,
+       "default": null,
+       "children": []
+      }
+     ],
+     "metadata": {}
+    },
+    "verdict": "non_breaking",
+    "changes": [
+     {
+      "change_type": "type_changed",
+      "path": "n",
+      "baseline": {
+       "name": "n",
+       "data_type": "INTEGER",
+       "nullable": true,
+       "position": 1,
+       "default": null,
+       "children": []
+      },
+      "current": {
+       "name": "n",
+       "data_type": "DOUBLE",
+       "nullable": true,
+       "position": 1,
+       "default": null,
+       "children": []
+      },
+      "severity": "non_breaking",
+      "rule_id": "TYPE-WIDENED",
+      "reason": "Type widened: INTEGER -> DOUBLE",
+      "confidence": 1.0,
+      "resolution": null,
+      "needs_human_review": false
+     }
+    ],
+    "run_metadata": {
+     "change_counts": {
+      "non_breaking": 1
+     },
+     "llm_calls": 0
+    }
+   },
+   "explanation": {
+    "label": "sample",
+    "summary": "Verdict: non_breaking. 1 change(s) detected, 0 breaking.",
+    "impacts": []
+   },
+   "ddl": {
+    "label": "sample",
+    "dialect": "duckdb",
+    "statements": [
+     "ALTER TABLE \"my_table\" ALTER COLUMN \"n\" SET DATA TYPE DOUBLE;"
     ],
     "skipped": []
    }
