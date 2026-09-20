@@ -89,6 +89,8 @@ class ClaudeCliAdapter:
                 )
             except subprocess.TimeoutExpired:
                 last_error = "timeout"
+            except UnicodeDecodeError:
+                last_error = "undecodable output"
             except OSError as exc:
                 raise LLMError(f"cannot run claude CLI: {type(exc).__name__}") from exc
             else:
