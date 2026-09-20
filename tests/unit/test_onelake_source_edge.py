@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 from deltalake import DeltaTable, Field, Schema
-from deltalake.exceptions import TableNotFoundError
+from deltalake.exceptions import DeltaError, TableNotFoundError
 from deltalake.schema import PrimitiveType
 
 from schemasentinel.adapters.sources import onelake
@@ -101,7 +101,10 @@ def test_table_not_found_maps_to_file_not_found() -> None:
 def test_version_number_selects_version(tmp_path: Path) -> None:
     path = str(tmp_path / "v")
     DeltaTable.create(path, Schema([Field("id", PrimitiveType("long"))]))
-    src = OneLakeSource(token_provider=lambda: "t", opener=lambda uri, storage_options=None: DeltaTable(path))
+    src = OneLakeSource(
+        token_provider=lambda: "t",
+        opener=lambda uri, storage_options=None: DeltaTable(path),
+    )
     snap = src.snapshot("ws/item/Tables/t", version="0")
     assert snap.metadata["version"] == 0
 
@@ -111,7 +114,7 @@ def test_bad_version_raises(local_table: str) -> None:
         token_provider=lambda: "t",
         opener=lambda uri, storage_options=None: DeltaTable(local_table),
     )
-    with pytest.raises(Exception):
+    with pytest.raises(DeltaError):
         src.snapshot("ws/item/Tables/t", version="99")
 
 

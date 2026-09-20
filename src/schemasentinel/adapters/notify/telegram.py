@@ -53,7 +53,9 @@ class TelegramNotifier:
             raise NotifierError("Telegram token and chat id are required")
         self._token = token
         self._chat_id = str(chat_id)
-        allowed = {str(c) for c in allowed_chat_ids} if allowed_chat_ids is not None else {self._chat_id}
+        allowed = {self._chat_id}
+        if allowed_chat_ids is not None:
+            allowed = {str(c) for c in allowed_chat_ids}
         self._allowed = allowed
         self._timeout = timeout
         self._post: HttpPost = http_post or _urllib_post
@@ -74,7 +76,8 @@ class TelegramNotifier:
         try:
             status, body = self._post(_API.format(token=self._token), payload, self._timeout)
         except Exception as exc:  # network errors may embed the URL, and thus the token
-            raise NotifierError(self._scrub(f"Telegram request failed: {type(exc).__name__}")) from None
+            reason = f"Telegram request failed: {type(exc).__name__}"
+            raise NotifierError(self._scrub(reason)) from None
         if status != 200:
             detail = self._scrub(body.decode("utf-8", "replace"))[:200]
             raise NotifierError(f"Telegram returned HTTP {status}: {detail}")

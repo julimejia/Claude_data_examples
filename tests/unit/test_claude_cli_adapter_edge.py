@@ -190,7 +190,8 @@ def test_timeout_passed_through() -> None:
 def test_tools_are_ignored() -> None:
     runner = FakeRunner(proc(GOOD))
     a = mk(runner)
-    assert a.complete_structured(system="s", prompt="p", schema=Answer, tools=[]).verdict == "rename"
+    out = a.complete_structured(system="s", prompt="p", schema=Answer, tools=[])
+    assert out.verdict == "rename"
 
 
 def test_unicode_prompt_roundtrip() -> None:
@@ -232,7 +233,8 @@ def test_env_beats_path(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_secret_not_logged_on_success_or_timeouts(caplog: pytest.LogCaptureFixture) -> None:
     secret = "sk-TOPSECRET-999"
     t = subprocess.TimeoutExpired(["claude", secret], 1)
-    runner = FakeRunner(t, proc(secret, 1), proc(envelope(f'{{"verdict": "{secret}", "confidence": 1}}')))
+    leaked = envelope(f'{{"verdict": "{secret}", "confidence": 1}}')
+    runner = FakeRunner(t, proc(secret, 1), proc(leaked))
     with caplog.at_level(logging.DEBUG):
         mk(runner).complete_structured(system=f"s {secret}", prompt=f"p {secret}", schema=Answer)
     assert secret not in caplog.text

@@ -67,7 +67,7 @@ def test_multiple_breaking_impacts_in_change_order_then_summary() -> None:
     assert [c.schema for c in llm.calls] == [ImpactText] * len(breaking) + [SummaryText]
     assert llm.calls[0].system == IMPACT_SYSTEM
     assert llm.calls[-1].system == SUMMARY_SYSTEM
-    for call, path in zip(llm.calls, breaking):
+    for call, path in zip(llm.calls, breaking, strict=False):  # calls has one extra: the summary
         assert path in call.prompt
 
 
