@@ -223,7 +223,8 @@ class _Builder:
         q = self._q(name)
         safety = Safety.SAFE if nullable else Safety.DESTRUCTIVE
         if self.d is Dialect.TSQL:
-            sql = f"ALTER TABLE {self.t} ALTER COLUMN {q} {typ} {'NULL' if nullable else 'NOT NULL'}"
+            null = "NULL" if nullable else "NOT NULL"
+            sql = f"ALTER TABLE {self.t} ALTER COLUMN {q} {typ} {null}"
         else:
             action = "DROP NOT NULL" if nullable else "SET NOT NULL"
             sql = f"ALTER TABLE {self.t} ALTER COLUMN {q} {action}"

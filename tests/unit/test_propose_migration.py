@@ -7,7 +7,7 @@ from schemasentinel.application.detect_drift import build_report
 from schemasentinel.application.propose_migration import ProposeMigration
 from schemasentinel.application.resolve import Resolve
 from schemasentinel.domain.migration import Dialect, Safety
-from schemasentinel.domain.models import SchemaSnapshot
+from schemasentinel.domain.models import Decision, Resolution, SchemaSnapshot
 from schemasentinel.evals.golden import load_cases, parse_columns
 
 CASES = load_cases(Path(__file__).parents[1] / "golden" / "cases")
@@ -52,12 +52,13 @@ def test_other_dialects_generate_and_pass_structural_check():
 
 def test_resolved_rename_and_drop_and_add():
     r = _report(["id:BIGINT", "customer_name:VARCHAR"], ["id:BIGINT", "cust_name:VARCHAR"])
-    renamed = Resolve(FakeLLM(default={"decision": "rename", "confidence": 0.9, "rationale": "x"}))
+    rename = Resolution(decision=Decision.RENAME, confidence=0.9, rationale="x")
+    renamed = Resolve(FakeLLM([rename]))
     out = ProposeMigration().run(renamed.run(r))
     assert out.valid, out.errors
     assert "RENAME COLUMN" in out.plan.statements[0].sql
     dropped = Resolve(
-        FakeLLM(default={"decision": "drop_and_add", "confidence": 0.9, "rationale": "x"})
+        FakeLLM([Resolution(decision=Decision.DROP_AND_ADD, confidence=0.9, rationale="x")])
     )
     out = ProposeMigration().run(dropped.run(r))
     assert out.valid, out.errors
