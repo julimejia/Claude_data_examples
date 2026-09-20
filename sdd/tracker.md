@@ -40,7 +40,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [x] T-011 | P2 | deps: T-010 | ClaudeCliAdapter (subprocess `claude -p`, JSON validation, 2 retries)
   AC: FR-7.2, FR-4.3; tested with a fake subprocess; locates the binary via CLAUDE_BIN env or PATH; never logs secrets.
   Notes: any decision about process handling or timeouts is routine; do not escalate.
-- [ ] T-012 | P2 | deps: T-005,T-010 | Resolve use case: LLM decides rename vs drop_and_add
+- [x] T-012 | P2 | deps: T-005,T-010 | Resolve use case: LLM decides rename vs drop_and_add
   AC: FR-4.1, FR-4.3; low confidence or invalid output → needs_human_review; Replay tests.
 - [ ] T-013 | P2 | deps: T-005,T-010 | ProposeMigration: DDL for DuckDB, Spark SQL/Delta, T-SQL with validation
   AC: FR-5.1–5.4; DuckDB DDL validated by execution on an in-memory baseline table; ordering safe-before-destructive.
