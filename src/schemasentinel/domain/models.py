@@ -97,3 +97,28 @@ class DriftReport(_Frozen):
     verdict: Verdict
     changes: tuple[SchemaChange, ...] = ()
     run_metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class ChangeImpact(_Frozen):
+    """LLM-written (or fallback) impact of one breaking change (FR-4.2)."""
+
+    path: str
+    impact: str
+
+
+class ImpactText(_Frozen):
+    """Structured LLM answer for a single change."""
+
+    impact: str = Field(min_length=1)
+
+
+class SummaryText(_Frozen):
+    """Structured LLM answer for the executive summary."""
+
+    summary: str = Field(min_length=1)
+
+
+class Explanation(_Frozen):
+    summary: str
+    impacts: tuple[ChangeImpact, ...] = ()
+    degraded: bool = False
