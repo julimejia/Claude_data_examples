@@ -24,7 +24,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: FR-2.1–2.3; diff(x, x) is empty; add/remove symmetry test; order-independent. Rename similarity uses stdlib `difflib` (OQ-1).
 - [x] T-005 | P1 | deps: T-004 | Rule-based classifier (table in FR-3.1)
   AC: FR-3.1–3.3; table-driven test covering every rule row; each change has rule_id, reason, confidence.
-- [ ] T-006 | P1 | deps: T-002 | Local files SchemaSource: CSV and Parquet via DuckDB
+- [x] T-006 | P1 | deps: T-002 | Local files SchemaSource: CSV and Parquet via DuckDB
   AC: FR-1.1, FR-1.2; fixtures under tests/fixtures; metadata-only read for Parquet (no full scan).
 - [ ] T-007 | P1 | deps: T-005,T-006 | DetectDrift use case + JSON and Markdown report
   AC: FR-6.1, FR-6.2; report has verdict, changes, metadata; snapshot tests for the Markdown output.
@@ -77,3 +77,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - 2026-09-19 19:16 T-003 done: Added domain/types.py: parse_type maps DuckDB/Parquet/Delta/internal type names to LogicalType, and compare_types classifies baseline->current as same/widened/narrowed/category_change (ints, floats, decimals, string length, date/timestamp). Table-driven tests in tests/unit/test_types.py pass and ruff is clean.
 - 2026-09-19 19:18 T-004 done: Added domain/diff.py: deterministic, order-independent diff (add/remove/type/nullability/position/nested via dotted paths) with difflib-based RENAME_CANDIDATE detection (threshold 0.6, one-to-one, same parent, compatible types); changes are emitted as needs_review with DIFF-* placeholder rule ids for rules.py (T-005) to classify. 20 new tests cover identity, symmetry and order-independence; all tests and ruff pass.
 - 2026-09-19 19:19 T-005 done: Added domain/rules.py (classify, classify_all) implementing every FR-3.1 row with rule_id, reason and confidence, format-aware reorder severity (csv positional), plus table-driven tests in tests/unit/test_rules.py; 126 tests pass, ruff clean.
+- 2026-09-19 19:21 T-006 done: Added the SchemaSource port and LocalFilesSource (DuckDB): Parquet file/directory schemas come from the footer only, CSV uses sniff_csv and records delimiter and has_header in metadata. Added CSV/Parquet fixtures under tests/fixtures (plus make_fixtures.py) and tests; 136 tests pass and ruff is clean. Caveat: DuckDB-written fixtures mark every Parquet column OPTIONAL, so the REQUIRED-to-NOT NULL mapping is tested with synthetic rows only. Nested types are not expanded (FR-1.4 left for a later task).
