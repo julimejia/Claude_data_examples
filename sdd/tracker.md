@@ -42,7 +42,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   Notes: any decision about process handling or timeouts is routine; do not escalate.
 - [x] T-012 | P2 | deps: T-005,T-010 | Resolve use case: LLM decides rename vs drop_and_add
   AC: FR-4.1, FR-4.3; low confidence or invalid output → needs_human_review; Replay tests.
-- [ ] T-013 | P2 | deps: T-005,T-010 | ProposeMigration: DDL for DuckDB, Spark SQL/Delta, T-SQL with validation
+- [x] T-013 | P2 | deps: T-005,T-010 | ProposeMigration: DDL for DuckDB, Spark SQL/Delta, T-SQL with validation
   AC: FR-5.1–5.4; DuckDB DDL validated by execution on an in-memory baseline table; ordering safe-before-destructive.
   Notes: validating T-SQL/Spark by parsing likely needs `sqlglot` → this is a RISKY LIBRARY decision (OQ-2); raise a decision request instead of adding it silently.
 - [ ] T-014 | P3 | deps: T-012,T-013 | Explain use case: per-change impact and executive summary
