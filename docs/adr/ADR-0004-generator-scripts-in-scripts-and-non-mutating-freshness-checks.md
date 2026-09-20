@@ -1,10 +1,17 @@
 # ADR-0004 - Generator scripts live in `scripts/`, and freshness checks never mutate the working tree
 
-- Status: accepted
+- Status: accepted, superseded in part by
+  [ADR-0006](ADR-0006-drop-the-generator-freshness-test-for-demo-examples.md)
 - Date: 2026-09-20
 - Raised during: task:T-022 (3 failed dev attempts)
 - Decided by: project owner (option A of ADR-0003)
 - Supersedes nothing; extends [ADR-0003](ADR-0003-architect-decision-in-task-t-022.md)
+
+> **Withdrawn part:** the open prerequisite below (the dev role's write allowlist must include `scripts/`)
+> was never satisfied, and the owner chose option C instead. ADR-0006 withdraws the
+> "Implementation contract for T-022 (attempt 4)" section: no generator script is written and the freshness
+> test is deleted. The `scripts/` vs `tools/` split (decision 1-2) and the non-mutating-check principle
+> (decision 3-4) remain in force for any future script or freshness check.
 
 ## Context
 
