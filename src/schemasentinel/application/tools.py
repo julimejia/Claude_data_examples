@@ -11,7 +11,8 @@ from schemasentinel.ports.llm import Tool
 MAX_SAMPLE_VALUES = 20
 MAX_VALUE_CHARS = 200
 
-# (column path, limit) -> raw values; supplied by the caller so the tools never own a data connection.
+# (column path, limit) -> raw values; supplied by the caller so the tools never own a
+# data connection.
 ValueSampler = Callable[[str, int], Sequence[Any]]
 
 

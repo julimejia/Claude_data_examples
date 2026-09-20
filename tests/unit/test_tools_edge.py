@@ -1,7 +1,7 @@
 import json
 
 from schemasentinel.application.detect_drift import build_report
-from schemasentinel.application.tools import MAX_SAMPLE_VALUES, build_tools
+from schemasentinel.application.tools import build_tools
 from schemasentinel.domain.models import SchemaSnapshot
 from schemasentinel.evals.golden import parse_columns
 
@@ -10,7 +10,11 @@ def _snap(cols):
     return SchemaSnapshot(source="s", format="parquet", columns=parse_columns(list(cols)))
 
 
-def _tools(sampler=None, base=("a:INTEGER", "b:VARCHAR"), cur=("a:BIGINT", "b:VARCHAR", "c:DOUBLE")):
+def _tools(
+    sampler=None,
+    base=("a:INTEGER", "b:VARCHAR"),
+    cur=("a:BIGINT", "b:VARCHAR", "c:DOUBLE"),
+):
     report = build_report(_snap(base), _snap(cur))
     return {t.name: t.handler for t in build_tools(report, sampler)}
 
