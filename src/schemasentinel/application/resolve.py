@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections import Counter
+
+from schemasentinel.application.detect_drift import overall_verdict
 from schemasentinel.domain.models import (
     Column,
     Decision,
@@ -77,5 +80,13 @@ class Resolve:
                 out.append(_apply(change, res))
             except LLMError:
                 out.append(change.model_copy(update={"needs_human_review": True}))
-        meta = {**report.run_metadata, "llm_calls": report.run_metadata.get("llm_calls", 0) + calls}
-        return report.model_copy(update={"changes": tuple(out), "run_metadata": meta})
+        changes = tuple(out)
+        counts = Counter(c.severity.value for c in changes)
+        meta = {
+            **report.run_metadata,
+            "change_counts": dict(sorted(counts.items())),
+            "llm_calls": report.run_metadata.get("llm_calls", 0) + calls,
+        }
+        return report.model_copy(
+            update={"changes": changes, "verdict": overall_verdict(changes), "run_metadata": meta}
+        )
