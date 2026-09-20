@@ -148,7 +148,10 @@ def main(
     notifier: Notifier | None = None,
 ) -> int:
     """`llm` and `notifier` override the ones built from --llm / --notify (used by tests)."""
-    args = build_parser().parse_args(argv)
+    try:
+        args = build_parser().parse_args(argv)
+    except SystemExit as exc:  # argparse exits; return the code so callers get an int
+        return exc.code if isinstance(exc.code, int) else EXIT_ERROR
     source = source or CliSource()
     try:
         if args.command == "snapshot":
