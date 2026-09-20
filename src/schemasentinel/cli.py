@@ -159,7 +159,8 @@ def main(
         report, explanation = _agent_stages(report, llm or _make_llm(args.llm, args.replay_dir))
         migration = None
         if args.dialect is not None or args.llm != "none" or llm is not None:
-            migration = ProposeMigration().run(report, Dialect(args.dialect or "duckdb"), args.table)
+            dialect = Dialect(args.dialect or "duckdb")
+            migration = ProposeMigration().run(report, dialect, args.table)
         if args.fmt == "json":
             text = render_json(report, explanation, migration)
         else:
