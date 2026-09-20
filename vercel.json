@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "functions": {
+    "api/diff.py": {
+      "includeFiles": "src/**",
+      "excludeFiles": "{**/__pycache__/**,**/*.pyc}",
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/diff", "dest": "/api/diff.py" }
+  ]
+}

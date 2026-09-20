@@ -102,6 +102,11 @@ shorthand `<workspace>/<item>/<path>` (e.g. `ws/lake.Lakehouse/Tables/orders`). 
 identity needs read access to the workspace. Tests use a fake storage layer; recordings against a
 real Fabric tenant are pending.
 
+## Live demo
+
+Live demo: <https://schemasentinel.vercel.app> (placeholder until the first deploy; setup in
+`docs/deploy-vercel.md`).
+
 ## Development
 ```
 python -m venv .venv
