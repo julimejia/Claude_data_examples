@@ -1,0 +1,31 @@
+{
+  "id": "drop-and-add-category",
+  "description": "Unrelated columns of different category",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "amount:DECIMAL(10,2)"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "region:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "amount",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      },
+      {
+        "change_type": "column_added",
+        "path": "region",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  },
+  "expected_resolution": "drop_and_add"
+}

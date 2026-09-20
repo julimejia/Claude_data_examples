@@ -1,0 +1,25 @@
+{
+  "id": "remove-column",
+  "description": "Column removed",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "email:VARCHAR",
+    "age:INTEGER"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "email:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "age",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      }
+    ]
+  }
+}

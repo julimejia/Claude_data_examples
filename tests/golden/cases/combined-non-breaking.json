@@ -1,0 +1,31 @@
+{
+  "id": "combined-non-breaking",
+  "description": "Add nullable and widen",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "n:INTEGER"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "n:BIGINT",
+    "note:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "n",
+        "severity": "non_breaking",
+        "rule_id": "TYPE-WIDENED"
+      },
+      {
+        "change_type": "column_added",
+        "path": "note",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

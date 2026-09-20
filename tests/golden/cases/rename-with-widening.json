@@ -1,0 +1,23 @@
+{
+  "id": "rename-with-widening",
+  "description": "user_id to userid with a wider type",
+  "format": "parquet",
+  "baseline": [
+    "user_id:INTEGER"
+  ],
+  "current": [
+    "userid:BIGINT"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "rename_candidate",
+        "path": "user_id",
+        "severity": "needs_review",
+        "rule_id": "RENAME-CANDIDATE"
+      }
+    ]
+  },
+  "expected_resolution": "rename"
+}

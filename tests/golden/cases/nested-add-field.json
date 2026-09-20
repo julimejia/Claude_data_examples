@@ -1,0 +1,35 @@
+{
+  "id": "nested-add-field",
+  "description": "Field added inside a struct",
+  "format": "parquet",
+  "baseline": [
+    {
+      "name": "s",
+      "type": "STRUCT(a INTEGER)",
+      "children": [
+        "a:INTEGER"
+      ]
+    }
+  ],
+  "current": [
+    {
+      "name": "s",
+      "type": "STRUCT(a INTEGER, b VARCHAR)",
+      "children": [
+        "a:INTEGER",
+        "b:VARCHAR"
+      ]
+    }
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "column_added",
+        "path": "s.b",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

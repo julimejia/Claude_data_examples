@@ -1,0 +1,24 @@
+{
+  "id": "null-to-not-null",
+  "description": "nullable to NOT NULL",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "email:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "email:VARCHAR!"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "nullability_changed",
+        "path": "email",
+        "severity": "breaking",
+        "rule_id": "NULL-TO-NOT-NULL"
+      }
+    ]
+  }
+}

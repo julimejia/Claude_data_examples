@@ -1,0 +1,34 @@
+{
+  "id": "nested-type-change",
+  "description": "Struct field type category change",
+  "format": "parquet",
+  "baseline": [
+    {
+      "name": "s",
+      "type": "STRUCT(a INTEGER)",
+      "children": [
+        "a:INTEGER"
+      ]
+    }
+  ],
+  "current": [
+    {
+      "name": "s",
+      "type": "STRUCT(a VARCHAR)",
+      "children": [
+        "a:VARCHAR"
+      ]
+    }
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "s.a",
+        "severity": "breaking",
+        "rule_id": "TYPE-CATEGORY"
+      }
+    ]
+  }
+}

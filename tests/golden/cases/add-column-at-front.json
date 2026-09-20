@@ -1,0 +1,25 @@
+{
+  "id": "add-column-at-front",
+  "description": "New nullable column first keeps survivor order",
+  "format": "csv",
+  "baseline": [
+    "a:INTEGER",
+    "b:VARCHAR"
+  ],
+  "current": [
+    "z:DATE",
+    "a:INTEGER",
+    "b:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "column_added",
+        "path": "z",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

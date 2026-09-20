@@ -1,0 +1,30 @@
+{
+  "id": "type-and-nullability",
+  "description": "Two changes on one column",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "n:BIGINT"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "n:INTEGER!"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "n",
+        "severity": "breaking",
+        "rule_id": "TYPE-NARROWED"
+      },
+      {
+        "change_type": "nullability_changed",
+        "path": "n",
+        "severity": "breaking",
+        "rule_id": "NULL-TO-NOT-NULL"
+      }
+    ]
+  }
+}

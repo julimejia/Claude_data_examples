@@ -1,0 +1,30 @@
+{
+  "id": "reorder-csv",
+  "description": "Reorder breaks positional CSV",
+  "format": "csv",
+  "baseline": [
+    "a:INTEGER",
+    "b:VARCHAR"
+  ],
+  "current": [
+    "b:VARCHAR",
+    "a:INTEGER"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "position_changed",
+        "path": "a",
+        "severity": "breaking",
+        "rule_id": "REORDER-POSITIONAL"
+      },
+      {
+        "change_type": "position_changed",
+        "path": "b",
+        "severity": "breaking",
+        "rule_id": "REORDER-POSITIONAL"
+      }
+    ]
+  }
+}

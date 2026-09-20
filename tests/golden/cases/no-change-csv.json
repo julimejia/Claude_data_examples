@@ -1,0 +1,17 @@
+{
+  "id": "no-change-csv",
+  "description": "Identical CSV schemas",
+  "format": "csv",
+  "baseline": [
+    "id:BIGINT!",
+    "name:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "name:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "none",
+    "changes": []
+  }
+}

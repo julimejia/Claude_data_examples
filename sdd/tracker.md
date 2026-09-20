@@ -30,7 +30,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: FR-6.1, FR-6.2; report has verdict, changes, metadata; snapshot tests for the Markdown output.
 - [x] T-008 | P2 | deps: T-007 | CLI: `snapshot` and `diff` commands with exit codes
   AC: FR-6.3; integration test via subprocess; exit 0/1/2 semantics verified.
-- [ ] T-009 | P2 | deps: T-007 | Golden set (≥ 30 cases) and eval harness with thresholds
+- [x] T-009 | P2 | deps: T-007 | Golden set (≥ 30 cases) and eval harness with thresholds
   AC: FR-8.1–8.3; `python -m schemasentinel.evals` prints metrics and fails on regression; breaking-change recall 1.0.
 
 ## M2 — Agent
@@ -80,3 +80,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - 2026-09-19 19:21 T-006 done: Added the SchemaSource port and LocalFilesSource (DuckDB): Parquet file/directory schemas come from the footer only, CSV uses sniff_csv and records delimiter and has_header in metadata. Added CSV/Parquet fixtures under tests/fixtures (plus make_fixtures.py) and tests; 136 tests pass and ruff is clean. Caveat: DuckDB-written fixtures mark every Parquet column OPTIONAL, so the REQUIRED-to-NOT NULL mapping is tested with synthetic rows only. Nested types are not expanded (FR-1.4 left for a later task).
 - 2026-09-19 19:23 T-007 done: Added application/detect_drift.py (DetectDrift use case + pure build_report, verdict, run metadata) and application/report.py (JSON and Markdown renderers) with unit tests and Markdown snapshot tests (breaking, non_breaking, none); 145 tests pass, ruff clean.
 - 2026-09-19 19:24 T-008 done: Added CLI (cli.py, __main__.py, console script) with `snapshot` and `diff` (--format json|md, --dialect accepted but reserved until DDL exists, -o); diff also accepts saved snapshot .json files. Exit codes 0/1/2 verified by subprocess integration tests; 153 tests pass and ruff is clean.
+- 2026-09-19 19:27 T-009 done: Added 44 hand-written golden cases (tests/golden/cases, regenerable via tools/gen_golden.py), the eval harness (schemasentinel.evals: golden loader, metrics, runner) and evals/thresholds.json. `python -m schemasentinel.evals` prints the metric table and exits 1 on regression; classification accuracy and breaking recall are both 1.0. Rename-resolution, DDL-validity and invalid-output metrics show n/a until the LLM and DDL stages exist. 168 tests pass and ruff is clean.

@@ -1,0 +1,35 @@
+{
+  "id": "nested-remove-field",
+  "description": "Field removed from a struct",
+  "format": "parquet",
+  "baseline": [
+    {
+      "name": "s",
+      "type": "STRUCT(a INTEGER, b VARCHAR)",
+      "children": [
+        "a:INTEGER",
+        "b:VARCHAR"
+      ]
+    }
+  ],
+  "current": [
+    {
+      "name": "s",
+      "type": "STRUCT(a INTEGER)",
+      "children": [
+        "a:INTEGER"
+      ]
+    }
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "s.b",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      }
+    ]
+  }
+}

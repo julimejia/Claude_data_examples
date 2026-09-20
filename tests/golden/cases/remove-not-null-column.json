@@ -1,0 +1,23 @@
+{
+  "id": "remove-not-null-column",
+  "description": "Removing a NOT NULL column",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "code:VARCHAR!"
+  ],
+  "current": [
+    "id:BIGINT!"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "code",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "id": "add-nullable",
+  "description": "Nullable column added",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "note:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "column_added",
+        "path": "note",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

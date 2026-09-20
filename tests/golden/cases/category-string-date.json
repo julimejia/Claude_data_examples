@@ -1,0 +1,24 @@
+{
+  "id": "category-string-date",
+  "description": "varchar to date",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "when:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "when:DATE"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "when",
+        "severity": "breaking",
+        "rule_id": "TYPE-CATEGORY"
+      }
+    ]
+  }
+}

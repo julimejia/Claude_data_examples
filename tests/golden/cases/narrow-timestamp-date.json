@@ -1,0 +1,24 @@
+{
+  "id": "narrow-timestamp-date",
+  "description": "timestamp to date",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "d:TIMESTAMP"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "d:DATE"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "d",
+        "severity": "breaking",
+        "rule_id": "TYPE-NARROWED"
+      }
+    ]
+  }
+}

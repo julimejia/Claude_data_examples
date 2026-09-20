@@ -1,0 +1,31 @@
+{
+  "id": "drop-and-add-dissimilar",
+  "description": "Same type but dissimilar names",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "email:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "quantity:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "email",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      },
+      {
+        "change_type": "column_added",
+        "path": "quantity",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  },
+  "expected_resolution": "drop_and_add"
+}

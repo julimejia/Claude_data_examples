@@ -1,0 +1,30 @@
+{
+  "id": "rename-category-differs",
+  "description": "Similar names but incompatible types",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "price:DOUBLE"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "price_label:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_removed",
+        "path": "price",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      },
+      {
+        "change_type": "column_added",
+        "path": "price_label",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

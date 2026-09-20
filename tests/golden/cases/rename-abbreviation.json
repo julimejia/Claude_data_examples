@@ -1,0 +1,25 @@
+{
+  "id": "rename-abbreviation",
+  "description": "cust_id to customer_id",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "cust_id:BIGINT"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "customer_id:BIGINT"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "rename_candidate",
+        "path": "cust_id",
+        "severity": "needs_review",
+        "rule_id": "RENAME-CANDIDATE"
+      }
+    ]
+  },
+  "expected_resolution": "rename"
+}

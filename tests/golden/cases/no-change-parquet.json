@@ -1,0 +1,17 @@
+{
+  "id": "no-change-parquet",
+  "description": "Identical schemas",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "name:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "name:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "none",
+    "changes": []
+  }
+}

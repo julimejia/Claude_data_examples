@@ -1,0 +1,24 @@
+{
+  "id": "narrow-bigint-to-double",
+  "description": "int64 loses precision in a double",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "n:BIGINT"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "n:DOUBLE"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "n",
+        "severity": "breaking",
+        "rule_id": "TYPE-NARROWED"
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "rename-name-suffix",
+  "description": "customer_name to customer_nm",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "customer_name:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "customer_nm:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "rename_candidate",
+        "path": "customer_name",
+        "severity": "needs_review",
+        "rule_id": "RENAME-CANDIDATE"
+      }
+    ]
+  },
+  "expected_resolution": "rename"
+}

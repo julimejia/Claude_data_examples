@@ -1,0 +1,23 @@
+{
+  "id": "csv-add-not-null",
+  "description": "NOT NULL added to CSV",
+  "format": "csv",
+  "baseline": [
+    "id:BIGINT!"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "qty:INTEGER!"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "column_added",
+        "path": "qty",
+        "severity": "breaking",
+        "rule_id": "ADD-NOT-NULL"
+      }
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "not-null-to-null",
+  "description": "NOT NULL to nullable is a warning",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "email:VARCHAR!"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "email:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "nullability_changed",
+        "path": "email",
+        "severity": "warning",
+        "rule_id": "NOT-NULL-TO-NULL"
+      }
+    ]
+  }
+}

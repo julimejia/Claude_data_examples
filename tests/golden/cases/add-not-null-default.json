@@ -1,0 +1,23 @@
+{
+  "id": "add-not-null-default",
+  "description": "NOT NULL column with default",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "qty:INTEGER!=0"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "column_added",
+        "path": "qty",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NOT-NULL-DEFAULT"
+      }
+    ]
+  }
+}

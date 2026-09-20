@@ -1,0 +1,30 @@
+{
+  "id": "reorder-delta",
+  "description": "Delta is accessed by name",
+  "format": "delta",
+  "baseline": [
+    "a:INTEGER",
+    "b:VARCHAR"
+  ],
+  "current": [
+    "b:VARCHAR",
+    "a:INTEGER"
+  ],
+  "expected": {
+    "verdict": "non_breaking",
+    "changes": [
+      {
+        "change_type": "position_changed",
+        "path": "a",
+        "severity": "non_breaking",
+        "rule_id": "REORDER-NAMED"
+      },
+      {
+        "change_type": "position_changed",
+        "path": "b",
+        "severity": "non_breaking",
+        "rule_id": "REORDER-NAMED"
+      }
+    ]
+  }
+}

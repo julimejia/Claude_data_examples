@@ -1,0 +1,38 @@
+{
+  "id": "combined-breaking",
+  "description": "Widen, remove and add together",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "n:INTEGER",
+    "old:VARCHAR"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "n:BIGINT",
+    "note:DATE"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "n",
+        "severity": "non_breaking",
+        "rule_id": "TYPE-WIDENED"
+      },
+      {
+        "change_type": "column_removed",
+        "path": "old",
+        "severity": "breaking",
+        "rule_id": "REMOVE"
+      },
+      {
+        "change_type": "column_added",
+        "path": "note",
+        "severity": "non_breaking",
+        "rule_id": "ADD-NULLABLE"
+      }
+    ]
+  }
+}

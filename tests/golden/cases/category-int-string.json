@@ -1,0 +1,24 @@
+{
+  "id": "category-int-string",
+  "description": "integer to varchar",
+  "format": "parquet",
+  "baseline": [
+    "id:BIGINT!",
+    "code:INTEGER"
+  ],
+  "current": [
+    "id:BIGINT!",
+    "code:VARCHAR"
+  ],
+  "expected": {
+    "verdict": "breaking",
+    "changes": [
+      {
+        "change_type": "type_changed",
+        "path": "code",
+        "severity": "breaking",
+        "rule_id": "TYPE-CATEGORY"
+      }
+    ]
+  }
+}
