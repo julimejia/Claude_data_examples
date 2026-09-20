@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -24,7 +25,11 @@ class DeltaSource:
             table = DeltaTable(ref)
             if version is not None:
                 text = version.strip()
-                table.load_as_version(int(text) if text.isdigit() else text)
+                if text.isdigit():
+                    table.load_as_version(int(text))
+                else:
+                    _check_not_before_first_commit(table, text)
+                    table.load_as_version(text)
         except TableNotFoundError as exc:
             raise FileNotFoundError(ref) from exc
         schema = json.loads(table.schema().to_json())
@@ -34,6 +39,19 @@ class DeltaSource:
             "partition_columns": list(table.metadata().partition_columns),
         }
         return SchemaSnapshot(source=ref, format="delta", columns=columns, metadata=metadata)
+
+
+def _check_not_before_first_commit(table: DeltaTable, text: str) -> None:
+    """deltalake silently falls back to version 0 for early timestamps; reject them."""
+    try:
+        when = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    except ValueError:
+        return  # let deltalake report the unparseable value
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=timezone.utc)
+    first = min(h["timestamp"] for h in table.history() if "timestamp" in h)
+    if when.timestamp() * 1000 < first:
+        raise ValueError(f"timestamp {text} is before the first commit of the table")
 
 
 def _columns(fields: list[dict[str, Any]]) -> tuple[Column, ...]:
