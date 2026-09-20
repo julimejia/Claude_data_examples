@@ -58,7 +58,21 @@ def test_stored_ai_output_is_labelled_honestly():
                 assert ex[part]["label"] == "sample"
 
 
-def test_generator_output_is_up_to_date():
-    before = (PUBLIC / "examples.json").read_text(encoding="utf-8")
-    subprocess.run([sys.executable, "tools/gen_demo_examples.py"], cwd=ROOT, check=True)
-    assert (PUBLIC / "examples.json").read_text(encoding="utf-8") == before
+def test_generator_output_is_up_to_date(tmp_path):
+    """The committed artifact is what the generator produces (ADR-0004).
+
+    The generator writes into tmp_path, never into the working tree, and the comparison is
+    on parsed data so the check tracks content rather than JSON formatting.
+    """
+    committed_before = (PUBLIC / "examples.json").read_bytes()
+    out = tmp_path / "examples.json"
+    subprocess.run(
+        [sys.executable, "scripts/gen_demo_examples.py", "--out", str(out)],
+        cwd=ROOT,
+        check=True,
+    )
+    regenerated = json.loads(out.read_text(encoding="utf-8"))["examples"]
+    assert {e["id"]: e for e in regenerated} == {e["id"]: e for e in EXAMPLES}
+    # canonical order, so regeneration is deterministic
+    assert [e["id"] for e in EXAMPLES] == sorted(e["id"] for e in EXAMPLES)
+    assert (PUBLIC / "examples.json").read_bytes() == committed_before
