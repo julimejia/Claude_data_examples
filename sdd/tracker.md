@@ -63,7 +63,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 ## M4 — Polish
 
-- [ ] T-020 | P3 | deps: T-014,T-017 | README with architecture diagram, usage and demo report
+- [x] T-020 | P3 | deps: T-014,T-017 | README with architecture diagram, usage and demo report
   AC: README explains problem, architecture (mermaid), quick start, eval results table.
 
 ## Decision log
