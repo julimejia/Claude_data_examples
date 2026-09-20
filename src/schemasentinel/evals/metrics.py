@@ -8,7 +8,7 @@ from schemasentinel.adapters.llm.replay import ReplayAdapter
 from schemasentinel.application.detect_drift import build_report
 from schemasentinel.application.propose_migration import ProposeMigration
 from schemasentinel.application.resolve import Resolve
-from schemasentinel.domain.migration import Dialect
+from schemasentinel.domain.migration import Dialect, generate_migration
 from schemasentinel.domain.models import Decision, DriftReport, SchemaSnapshot, Severity
 from schemasentinel.evals.golden import GoldenCase, parse_columns
 from schemasentinel.ports.llm import LLMError, LLMPort
@@ -92,12 +92,22 @@ def _actual_resolution(report: DriftReport) -> str:
     return Decision.DROP_AND_ADD.value
 
 
-def _ddl_valid(report: DriftReport) -> bool:
+def _ddl_applicable(report: DriftReport) -> bool:
+    """Nested-field changes are skipped by the generator by design (FR-5), so not scored."""
+    plan = generate_migration(report, Dialect.DUCKDB, "dataset")
+    return not any("nested" in s.reason for s in plan.skipped)
+
+
+def _ddl_errors(report: DriftReport) -> list[str]:
+    """Validation errors across all dialects; empty when the DDL is valid everywhere."""
     proposer = ProposeMigration()
-    try:
-        return all(proposer.run(report, d).valid for d in Dialect)
-    except Exception:  # noqa: BLE001 - a generator crash counts as invalid DDL
-        return False
+    errors: list[str] = []
+    for dialect in Dialect:
+        try:
+            errors += [f"{dialect.value}: {e}" for e in proposer.run(report, dialect).errors]
+        except Exception as exc:  # noqa: BLE001 - a generator crash counts as invalid DDL
+            errors.append(f"{dialect.value}: {exc!r}")
+    return errors
 
 
 def evaluate(cases: list[GoldenCase], llm: LLMPort | None = None) -> EvalResult:
@@ -117,8 +127,12 @@ def evaluate(cases: list[GoldenCase], llm: LLMPort | None = None) -> EvalResult:
         report = _base_report(case)
         if counting is not None:
             resolved = Resolve(counting).run(report)
-            ddl_total += 1
-            ddl_valid += _ddl_valid(resolved)
+            if _ddl_applicable(resolved):
+                ddl_total += 1
+                if ddl_errors := _ddl_errors(resolved):
+                    failures.append(CaseFailure(case.id, "invalid DDL: " + " | ".join(ddl_errors)))
+                else:
+                    ddl_valid += 1
             if case.expected_resolution is not None:
                 resolution_total += 1
                 resolution_correct += _actual_resolution(resolved) == case.expected_resolution
@@ -154,7 +168,9 @@ def evaluate(cases: list[GoldenCase], llm: LLMPort | None = None) -> EvalResult:
             resolution_correct / resolution_total if resolution_total else None
         )
         metrics["ddl_validity_rate"] = ddl_valid / ddl_total if ddl_total else None
-        metrics["invalid_output_rate"] = counting.invalid / counting.calls if counting.calls else 0.0
+        metrics["invalid_output_rate"] = (
+            counting.invalid / counting.calls if counting.calls else 0.0
+        )
     return EvalResult(metrics=metrics, case_count=len(cases), failures=failures)
 
 
