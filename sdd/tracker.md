@@ -84,7 +84,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
   AC: FR-4, FR-5, FR-6.2, FR-7.3 (AC-22, AC-25, AC-27, AC-32, AC-37, AC-38, AC-43); `diff` runs the agent stages when `--llm replay|claude-cli` is given (default `none` = deterministic only); `--dialect duckdb|spark|tsql` selects the DDL; report has explanations and DDL; `--notify telegram|console` sends the summary; LLM failure never fails the run.
 - [x] T-025 | P2 | deps: T-024 | LLM tools: get_snapshot, get_diff, sample_column_values (max 20 values), validate_ddl
   AC: FR-4.4 (AC-28); read-only, bounded, exposed through the LLM port; unit tests for each tool including the 20-value cap.
-- [ ] T-026 | P3 | deps: T-024 | Structured JSON-line run logging
+- [x] T-026 | P3 | deps: T-024 | Structured JSON-line run logging
   AC: constitution principle 9 (AC-55); one JSON line per run with run id, source, change counts, LLM calls, latency, outcome; never logs secrets or sampled values; tests.
 - [ ] T-027 | P3 | deps: T-009 | Performance tests and coverage measurement
   AC: NFR-1, NFR-6 (AC-6, AC-12, AC-53); a 500-column diff under 100 ms; Parquet schema read does not scan data; coverage of domain/ reported in CI with a 90 % gate. Also make `ruff check src tests` fully clean (7 findings left from earlier tasks, e.g. blind `pytest.raises(Exception)`): use the specific exception types.
