@@ -109,6 +109,24 @@ data quality (that is DQ Copilot, project #3), UI beyond a static demo.
 - FR-8.3 `python -m schemasentinel.evals` prints a table and exits non-zero if any metric
   regresses below its threshold in `evals/thresholds.json`.
 
+### FR-9 Public interactive demo (Vercel)
+- FR-9.1 A Vercel Python serverless function `POST /api/diff` accepts `{"baseline": <SchemaSnapshot JSON>,
+  "current": <SchemaSnapshot JSON>}` and returns the deterministic `DriftReport` JSON (diff + rule classification).
+  It uses only the domain and application layers: no I/O adapters (DuckDB, Delta, OneLake), no LLM, no network.
+- FR-9.2 Input is validated with Pydantic; invalid input returns HTTP 400 with a readable message. Payload is capped
+  (256 KB, 2 000 columns). Nothing the user pastes is stored or logged.
+- FR-9.3 A static UI (no build step) with two editors for the baseline and current snapshots, a picker of bundled
+  examples derived from the golden set, and a results view: overall verdict, per-change severity badge, rule id and
+  reason, rename candidates flagged as needs review. Usable at 400 px width, keyboard accessible, light/dark aware.
+- FR-9.4 For bundled examples the UI also shows the explanation and DDL from stored runs. Label them accurately:
+  "recorded AI output" only if they come from a real Claude recording, otherwise "sample output". For schemas the
+  visitor pastes, only the deterministic result is shown, and the UI says AI stages are disabled in the public demo.
+- FR-9.5 Deployment uses Vercel's Git integration (a push to the connected branch deploys). `vercel.json` and a root
+  `requirements.txt` limited to `pydantic`; a script checks that the function bundle stays far below Vercel's size limit.
+- Acceptance: handler tests call the function with golden-set pairs and match the CLI's classification; invalid and
+  oversized input give 400; a static check proves every example referenced by the UI exists; setup and the manual
+  check of the deployed URL are documented.
+
 ## 4. Non-functional requirements
 - NFR-1 **Performance**: schema extraction from a 1 GB Parquet file < 2 s (metadata only,
   no full scan). Diff of two 500-column schemas < 100 ms.
@@ -118,6 +136,7 @@ data quality (that is DQ Copilot, project #3), UI beyond a static demo.
 - NFR-4 **Security**: read-only access; secrets only via environment; Telegram chat-id allowlist.
 - NFR-5 **Portability**: Windows and Linux; Python 3.11+.
 - NFR-6 **Testability**: domain layer ≥ 90 % line coverage; no network in unit tests.
+- NFR-7 **Public demo safety**: the deployed demo never calls an LLM, never persists or logs user input, holds no secrets, and rejects oversized input.
 
 ## 5. Milestones
 1. **M1 — Core (deterministic)**: FR-1 (local), FR-2, FR-3, FR-6 basic, CLI.
@@ -125,6 +144,7 @@ data quality (that is DQ Copilot, project #3), UI beyond a static demo.
 3. **M3 — Integrations**: Delta + OneLake adapters, Telegram notifier, CI workflow, demo.
 4. **M4 — Polish**: README, architecture diagram, recorded demo, Fabric recordings
    (must finish before the Fabric trial ends on 2026-11-18).
+5. **M5 - Public demo**: FR-9 (Vercel function + static UI + deployment config).
 
 ## 6. Open questions (escalate via decision protocol if blocking)
 - OQ-1 Rename similarity: plain Levenshtein vs token-based? Start with a simple normalized

@@ -11,3 +11,6 @@ build/
 
 # autonomous loop runtime state (local only)
 .autoloop/
+
+# Vercel local link (never commit)
+.vercel/

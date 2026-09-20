@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
-from pathlib import Path
 from collections.abc import Callable
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from deltalake import DeltaTable
@@ -58,7 +58,7 @@ def _check_not_before_first_commit(table: DeltaTable, text: str) -> None:
     except ValueError:
         return  # let deltalake report the unparseable value
     if when.tzinfo is None:
-        when = when.replace(tzinfo=timezone.utc)
+        when = when.replace(tzinfo=UTC)
     first = min(h["timestamp"] for h in table.history() if "timestamp" in h)
     if when.timestamp() * 1000 < first:
         raise ValueError(f"timestamp {text} is before the first commit of the table")
