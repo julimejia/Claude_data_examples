@@ -63,6 +63,7 @@ def test_idempotent():
         b"\xff\xfe",
         b"[" * 100000,
     ],
+    ids=lambda b: repr(b[:12]),
 )
 def test_malformed_bodies_400(body):
     status, payload = api.handle(body)
