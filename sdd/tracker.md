@@ -52,7 +52,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 ## M3 — Integrations
 
-- [ ] T-016 | P2 | deps: T-006 | Delta SchemaSource (deltalake) with version/timestamp
+- [x] T-016 | P2 | deps: T-006 | Delta SchemaSource (deltalake) with version/timestamp
   AC: FR-1.3; fixtures created with deltalake in tmp_path; reads log only.
 - [ ] T-017 | P2 | deps: T-007 | Notifier port with ConsoleNotifier and TelegramNotifier
   AC: FR-7.3; chat-id allowlist enforced; HTTP layer faked in tests; token never logged. Use stdlib `urllib`, no new dependency.
