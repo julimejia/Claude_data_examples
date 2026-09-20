@@ -71,7 +71,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - [x] T-021 | P2 | deps: T-007,T-009 | Demo API: Vercel Python function POST /api/diff using only the domain layer
   AC: FR-9.1, FR-9.2, NFR-7; api/diff.py (BaseHTTPRequestHandler style used by Vercel's Python runtime) adds src/ to the path and imports only schemasentinel.domain/application; handler tests use golden-set pairs and match the CLI classification; 400 on invalid or oversized input; no logging of input.
   Notes: the function must NOT import duckdb, deltalake, the LLM adapters or the notifiers. If the domain layer pulls in a heavy dependency, raise a decision request instead of working around it.
-- [ ] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
+- [x] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
   AC: FR-9.3, FR-9.4; plain HTML/CSS/JS under public/ (no build step), examples generated from the golden set into a JSON file by a script, responsive at 400 px, keyboard accessible, light/dark; a test proves every example the UI references exists and its stored result matches the deterministic classification.
   Notes: label stored AI output honestly ("recorded" only if truly recorded from Claude, else "sample"). No external scripts or fonts.
 - [ ] T-023 | P2 | deps: T-021,T-022 | Vercel deployment config, size check and docs
