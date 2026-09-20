@@ -35,7 +35,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 ## M2 — Agent
 
-- [ ] T-010 | P1 | deps: T-002 | LLMPort, FakeLLM and ReplayAdapter (+ record mode)
+- [x] T-010 | P1 | deps: T-002 | LLMPort, FakeLLM and ReplayAdapter (+ record mode)
   AC: FR-7.2; Replay is deterministic keyed by hash of (system, prompt, schema); unit tests without network.
 - [ ] T-011 | P2 | deps: T-010 | ClaudeCliAdapter (subprocess `claude -p`, JSON validation, 2 retries)
   AC: FR-7.2, FR-4.3; tested with a fake subprocess; locates the binary via CLAUDE_BIN env or PATH; never logs secrets.
@@ -81,3 +81,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 - 2026-09-19 19:23 T-007 done: Added application/detect_drift.py (DetectDrift use case + pure build_report, verdict, run metadata) and application/report.py (JSON and Markdown renderers) with unit tests and Markdown snapshot tests (breaking, non_breaking, none); 145 tests pass, ruff clean.
 - 2026-09-19 19:24 T-008 done: Added CLI (cli.py, __main__.py, console script) with `snapshot` and `diff` (--format json|md, --dialect accepted but reserved until DDL exists, -o); diff also accepts saved snapshot .json files. Exit codes 0/1/2 verified by subprocess integration tests; 153 tests pass and ruff is clean.
 - 2026-09-19 19:27 T-009 done: Added 44 hand-written golden cases (tests/golden/cases, regenerable via tools/gen_golden.py), the eval harness (schemasentinel.evals: golden loader, metrics, runner) and evals/thresholds.json. `python -m schemasentinel.evals` prints the metric table and exits 1 on regression; classification accuracy and breaking recall are both 1.0. Rename-resolution, DDL-validity and invalid-output metrics show n/a until the LLM and DDL stages exist. 168 tests pass and ruff is clean.
+- 2026-09-19 19:29 T-010 done: Added LLMPort/LLMError/Tool (ports/llm.py), FakeLLM, and ReplayAdapter with sha256 key of (system, prompt, schema name) plus record mode wrapping another adapter; 8 network-free unit tests pass (176 total) and ruff is clean.
