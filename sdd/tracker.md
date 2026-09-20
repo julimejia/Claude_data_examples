@@ -68,7 +68,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 ## M5 — Public demo (Vercel)
 
-- [ ] T-021 | P2 | deps: T-007,T-009 | Demo API: Vercel Python function POST /api/diff using only the domain layer
+- [x] T-021 | P2 | deps: T-007,T-009 | Demo API: Vercel Python function POST /api/diff using only the domain layer
   AC: FR-9.1, FR-9.2, NFR-7; api/diff.py (BaseHTTPRequestHandler style used by Vercel's Python runtime) adds src/ to the path and imports only schemasentinel.domain/application; handler tests use golden-set pairs and match the CLI classification; 400 on invalid or oversized input; no logging of input.
   Notes: the function must NOT import duckdb, deltalake, the LLM adapters or the notifiers. If the domain layer pulls in a heavy dependency, raise a decision request instead of working around it.
 - [ ] T-022 | P2 | deps: T-021 | Demo UI: static interactive page with bundled examples and results view
