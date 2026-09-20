@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
+from collections.abc import Callable
 from typing import Any
 
 from deltalake import DeltaTable
@@ -18,11 +19,20 @@ class DeltaSource:
     (``"2024-01-01T00:00:00Z"``); ``None`` means the latest version. No data files are read.
     """
 
+    def __init__(
+        self,
+        storage_options: dict[str, str] | None = None,
+        opener: Callable[..., DeltaTable] = DeltaTable,
+    ) -> None:
+        self._storage_options = storage_options
+        self._opener = opener
+
     def snapshot(self, ref: str, *, version: str | None = None) -> SchemaSnapshot:
         if "://" not in ref and not Path(ref).exists():
             raise FileNotFoundError(ref)
         try:
-            table = DeltaTable(ref)
+            table = (self._opener(ref, storage_options=self._storage_options)
+                     if self._storage_options else self._opener(ref))
             if version is not None:
                 text = version.strip()
                 if text.isdigit():
