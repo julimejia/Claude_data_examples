@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
+from schemasentinel.adapters.llm.replay import ReplayAdapter
 from schemasentinel.application.detect_drift import build_report
-from schemasentinel.domain.models import SchemaSnapshot, Severity
+from schemasentinel.application.propose_migration import ProposeMigration
+from schemasentinel.application.resolve import Resolve
+from schemasentinel.domain.migration import Dialect
+from schemasentinel.domain.models import Decision, DriftReport, SchemaSnapshot, Severity
 from schemasentinel.evals.golden import GoldenCase, parse_columns
+from schemasentinel.ports.llm import LLMError, LLMPort
 
-# Metrics that need the LLM stages (FR-4, FR-5); reported as n/a until those exist.
-PENDING_METRICS = ("rename_resolution_accuracy", "ddl_validity_rate", "invalid_output_rate")
+# Metrics that need the LLM stages (FR-4, FR-5); n/a when evaluating without an LLM.
+LLM_METRICS =("rename_resolution_accuracy", "ddl_validity_rate", "invalid_output_rate")
 
 
 @dataclass(frozen=True)
@@ -28,18 +34,94 @@ def _snapshot(name: str, fmt: str, specs: list[Any]) -> SchemaSnapshot:
     return SchemaSnapshot(source=name, format=fmt, columns=parse_columns(specs))
 
 
-def evaluate(cases: list[GoldenCase]) -> EvalResult:
-    """Run the deterministic pipeline on each case and score it against the expectation."""
+class _CountingLLM:
+    """Wraps an LLMPort and counts calls and invalid outputs (LLMError)."""
+
+    def __init__(self, inner: LLMPort) -> None:
+        self._inner = inner
+        self.calls = 0
+        self.invalid = 0
+
+    def complete_structured(self, **kwargs: Any) -> Any:
+        self.calls += 1
+        try:
+            return self._inner.complete_structured(**kwargs)
+        except LLMError:
+            self.invalid += 1
+            raise
+
+
+class _OracleLLM:
+    """Answers with a case's expected resolution; only used to record Replay transcripts."""
+
+    def __init__(self, decision: str | None) -> None:
+        self.decision = decision
+
+    def complete_structured(self, *, schema: Any, **_: Any) -> Any:
+        if self.decision is None:
+            raise LLMError("no expected_resolution for this case")
+        return schema(
+            decision=Decision(self.decision),
+            confidence=0.9,
+            rationale="Golden-set expectation.",
+        )
+
+
+def _base_report(case: GoldenCase) -> DriftReport:
+    return build_report(
+        _snapshot(f"{case.id}/baseline", case.format, case.baseline),
+        _snapshot(f"{case.id}/current", case.format, case.current),
+    )
+
+
+def record_replay(cases: list[GoldenCase], directory: Path) -> None:
+    """Record transcripts for every resolvable case so evals can run in Replay mode."""
+    for case in cases:
+        Resolve(ReplayAdapter(directory, record_with=_OracleLLM(case.expected_resolution))).run(
+            _base_report(case)
+        )
+
+
+def _actual_resolution(report: DriftReport) -> str:
+    """Decision the pipeline reached: LLM verdict on a candidate, else a plain drop and add."""
+    for change in report.changes:
+        if change.resolution is not None or change.needs_human_review:
+            if change.needs_human_review or change.resolution is None:
+                return Decision.UNKNOWN.value
+            return change.resolution.decision.value
+    return Decision.DROP_AND_ADD.value
+
+
+def _ddl_valid(report: DriftReport) -> bool:
+    proposer = ProposeMigration()
+    try:
+        return all(proposer.run(report, d).valid for d in Dialect)
+    except Exception:  # noqa: BLE001 - a generator crash counts as invalid DDL
+        return False
+
+
+def evaluate(cases: list[GoldenCase], llm: LLMPort | None = None) -> EvalResult:
+    """Run the pipeline on each case and score it against the expectation.
+
+    Without `llm` the LLM-dependent metrics are None; with one (e.g. a ReplayAdapter) the
+    resolve and migration stages run too.
+    """
+    counting = _CountingLLM(llm) if llm is not None else None
+    resolution_total = resolution_correct = ddl_total = ddl_valid = 0
     correct = 0
     breaking_expected = 0
     breaking_found = 0
     failures: list[CaseFailure] = []
 
     for case in cases:
-        report = build_report(
-            _snapshot(f"{case.id}/baseline", case.format, case.baseline),
-            _snapshot(f"{case.id}/current", case.format, case.current),
-        )
+        report = _base_report(case)
+        if counting is not None:
+            resolved = Resolve(counting).run(report)
+            ddl_total += 1
+            ddl_valid += _ddl_valid(resolved)
+            if case.expected_resolution is not None:
+                resolution_total += 1
+                resolution_correct += _actual_resolution(resolved) == case.expected_resolution
         actual = {
             (c.change_type.value, c.path, c.severity.value, c.rule_id) for c in report.changes
         }
@@ -65,7 +147,14 @@ def evaluate(cases: list[GoldenCase]) -> EvalResult:
         "classification_accuracy": correct / len(cases) if cases else 0.0,
         "breaking_recall": breaking_found / breaking_expected if breaking_expected else 1.0,
     }
-    metrics.update(dict.fromkeys(PENDING_METRICS))
+    if counting is None:
+        metrics.update(dict.fromkeys(LLM_METRICS))
+    else:
+        metrics["rename_resolution_accuracy"] = (
+            resolution_correct / resolution_total if resolution_total else None
+        )
+        metrics["ddl_validity_rate"] = ddl_valid / ddl_total if ddl_total else None
+        metrics["invalid_output_rate"] = counting.invalid / counting.calls if counting.calls else 0.0
     return EvalResult(metrics=metrics, case_count=len(cases), failures=failures)
 
 

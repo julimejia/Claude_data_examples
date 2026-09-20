@@ -4,10 +4,12 @@ import argparse
 import json
 from pathlib import Path
 
+from schemasentinel.adapters.llm.replay import ReplayAdapter
 from schemasentinel.evals.golden import load_cases
-from schemasentinel.evals.metrics import check_thresholds, evaluate
+from schemasentinel.evals.metrics import check_thresholds, evaluate, record_replay
 
 ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_REPLAY_DIR = ROOT / "evals" / "replay"
 DEFAULT_GOLDEN_DIR = ROOT / "tests" / "golden" / "cases"
 DEFAULT_THRESHOLDS = ROOT / "evals" / "thresholds.json"
 
@@ -17,6 +19,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m schemasentinel.evals")
     parser.add_argument("--golden-dir", type=Path, default=DEFAULT_GOLDEN_DIR)
     parser.add_argument("--thresholds", type=Path, default=DEFAULT_THRESHOLDS)
+    parser.add_argument(
+        "--replay-dir",
+        type=Path,
+        default=DEFAULT_REPLAY_DIR,
+        help="recorded LLM transcripts; without them the LLM metrics are n/a",
+    )
+    parser.add_argument(
+        "--record", action="store_true", help="(re)write the Replay transcripts and exit"
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -26,7 +37,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}")
         return 2
 
-    result = evaluate(cases)
+    if args.record:
+        record_replay(cases, args.replay_dir)
+        print(f"recorded transcripts in {args.replay_dir}")
+        return 0
+
+    llm = ReplayAdapter(args.replay_dir) if args.replay_dir.is_dir() else None
+    result = evaluate(cases, llm)
     violations = check_thresholds(result.metrics, thresholds, case_count=result.case_count)
 
     print(f"Golden cases: {result.case_count}")

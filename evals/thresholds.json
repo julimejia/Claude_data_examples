@@ -2,7 +2,11 @@
   "min_cases": 30,
   "min": {
     "classification_accuracy": 1.0,
-    "breaking_recall": 1.0
+    "breaking_recall": 1.0,
+    "rename_resolution_accuracy": 1.0,
+    "ddl_validity_rate": 1.0
   },
-  "max": {}
+  "max": {
+    "invalid_output_rate": 0.0
+  }
 }
