@@ -16,7 +16,7 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 
 - [x] T-001 | P1 | deps: - | Scaffold project: pyproject.toml, package skeleton, ruff + pytest config, README stub
   AC: `python -m pytest` runs (0 tests ok), `ruff check` clean, package importable as `schemasentinel`; dependencies limited to the constitution's allowed core.
-- [ ] T-002 | P1 | deps: T-001 | Domain models (SchemaSnapshot, Column, SchemaChange, Severity, DriftReport) with JSON round-trip
+- [x] T-002 | P1 | deps: T-001 | Domain models (SchemaSnapshot, Column, SchemaChange, Severity, DriftReport) with JSON round-trip
   AC: FR-1.5; Pydantic models are frozen; round-trip tests pass; recursive nested types via dotted paths (FR-1.4).
 - [ ] T-003 | P1 | deps: T-002 | Logical type normalization and widening/narrowing lattice
   AC: maps DuckDB/Parquet/Delta type names to logical types; table-driven tests for widen/narrow/category-change.
@@ -73,3 +73,4 @@ Requirements references (FR-x, NFR-x) point to `requirements.md`.
 ## Run log
 (The loop appends one line per iteration: timestamp, task, outcome.)
 - 2026-09-19 19:13 T-001 done: Added pyproject.toml (pydantic, duckdb, deltalake; dev: pytest, ruff; ruff and pytest config, tools/ excluded from ruff), src/schemasentinel package skeleton with domain/application/ports/adapters/evals subpackages, tests/unit, and README stub. ruff check is clean, pytest collects 0 tests, and the package imports.
+- 2026-09-19 19:14 T-002 done: Added frozen Pydantic domain models in domain/models.py (Column with recursive children, SchemaSnapshot with flatten() to dotted paths, SchemaChange, Severity, Verdict, ChangeType, DriftReport) plus tests/unit/test_models.py covering JSON round-trip, frozenness and nested dotted paths; 7 tests pass and ruff is clean.
