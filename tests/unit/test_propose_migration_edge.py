@@ -209,9 +209,10 @@ def test_works_without_sqlglot_installed(monkeypatch):
 
 def test_sqlglot_rejects_garbage_when_installed(monkeypatch):
     pytest.importorskip("sqlglot")
-    # Passes the structural check (ALTER TABLE ... ;) but sqlglot raises ParseError on it in every dialect.
-    # sqlglot is lenient elsewhere: e.g. "ADD ADD ADD" parses as a valid T-SQL Alter, and unsupported
-    # syntax falls back to a generic Command instead of raising, so those cases prove nothing here.
+    # Passes the structural check (ALTER TABLE ... ;) but sqlglot raises ParseError on it
+    # in every dialect. sqlglot is lenient elsewhere: "ADD ADD ADD" parses as a valid T-SQL
+    # Alter, and unsupported syntax falls back to a generic Command instead of raising, so
+    # those statements would prove nothing here.
     bad = MigrationPlan(
         dialect=Dialect.TSQL,
         table="t",
